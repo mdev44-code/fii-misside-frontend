@@ -1,0 +1,18 @@
+<div
+  class="avatar"
+  [class]="'avatar--' + size"
+  [style.background]="bgColor()"
+  [style.border-color]="borderColor()"
+>
+  @if (src && !imgError()) {
+    <img
+      [src]="src"
+      [alt]="name"
+      (error)="imgError.set(true)"
+    />
+  } @else {
+    <span class="avatar__initials" [style.color]="textColor()">
+          {{ initials() }}
+        </span>
+  }
+</div>

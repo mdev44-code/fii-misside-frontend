@@ -1,0 +1,316 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:    rgb(35, 112, 68);
+$green-d:  rgb(22, 78, 47);
+$green-xl: rgba(35, 112, 68, 0.10);
+$cream:    rgb(245, 240, 232);
+$ink:      #0d1a10;
+$dim:      #6b7d6f;
+$border:   rgba(35, 112, 68, 0.13);
+$error:    #dc2626;
+$mx:       clamp(1rem, 4vw, 3.5rem);
+
+:host {
+  display: block;
+  background: $cream;
+  min-height: 100dvh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  padding: calc(3.5rem + 1rem) $mx 5rem;
+}
+
+// Bouton retour
+.back-btn {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  font-size: 0.875rem; font-weight: 600; color: $green;
+  text-decoration: none; margin-bottom: 1.25rem;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Wrapper centré du formulaire ──────────────────────────────
+.form-wrap {
+  max-width: 860px;     // largeur max — confortable sur desktop
+  margin: 0 auto;       // centrage horizontal
+}
+
+.form-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $ink;
+  margin-bottom: 0.375rem;
+}
+
+.form-sub {
+  font-size: 0.875rem;
+  color: $dim;
+  line-height: 1.5;
+}
+
+// ── Formulaire ────────────────────────────────────────────────
+.form {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid $border;
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Ligne de 3 champs ─────────────────────────────────────────
+.fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+
+  // Tablette → 2 colonnes
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  // Mobile → 1 colonne
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Champs individuels ────────────────────────────────────────
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  &.field-group--error .field-input {
+    border-color: $error;
+    background: #fef2f2;
+  }
+}
+
+.field-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $ink;
+}
+
+.req { color: $error; margin-left: 2px; }
+.opt { font-size: 0.6875rem; font-weight: 500; color: $dim; margin-left: 4px; }
+
+.field-wrap { position: relative; }
+
+.field-icon {
+  position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+  color: $dim; pointer-events: none;
+}
+
+.field-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 1rem 0 2.625rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem;
+  color: $ink;
+  background: rgba(255,255,255,0.8);
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: $dim; }
+
+  &:focus {
+    border-color: $green;
+    box-shadow: 0 0 0 3px rgba(35,112,68,0.10);
+    background: #fff;
+  }
+}
+
+.field-error {
+  font-size: 0.6875rem;
+  color: $error;
+  font-weight: 500;
+}
+
+// ── Grille des rôles — 4 colonnes ────────────────────────────
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.625rem;
+
+  // Tablette → 2 colonnes
+  @media (max-width: 720px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Mobile → 1 colonne
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.role-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.875rem 0.875rem 0.75rem;
+  cursor: pointer;
+  background: rgba(255,255,255,0.7);
+  border: 1.5px solid $border;
+  border-radius: 12px;
+  transition: all 0.15s;
+
+  input[type="radio"] { display: none; }
+
+  &:hover { border-color: rgba(35,112,68,0.3); background: rgba(35,112,68,0.03); }
+
+  &--selected {
+    border-color: $green;
+    background: rgba(35,112,68,0.07);
+  }
+}
+
+.role-option__name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $ink;
+  display: block;
+  padding-right: 1.5rem; // espace pour la coche
+
+  &[data-role="admin"]     { color: $green-d; }
+  &[data-role="treasurer"] { color: #7a4f00; }
+  &[data-role="manager"]   { color: #1e3a8a; }
+}
+
+.role-option__desc {
+  font-size: 0.6875rem;
+  color: $dim;
+  line-height: 1.4;
+}
+
+.role-option__check {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: transparent;
+  transition: all 0.15s;
+
+  .role-option--selected & {
+    background: $green;
+    border-color: $green;
+  }
+}
+
+// ── Erreur API ────────────────────────────────────────────────
+.alert-error {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 10px; color: $error;
+  font-size: 0.875rem; font-weight: 500;
+}
+
+// ── Bouton submit ─────────────────────────────────────────────
+.btn-submit {
+  display: flex; align-items: center; justify-content: center; gap: 0.625rem;
+  width: 100%; height: 50px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9375rem; font-weight: 600;
+  color: #fff; background: $green;
+  border: none; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(35,112,68,0.28);
+  transition: background 0.2s, transform 0.15s;
+
+  &:hover:not(:disabled) { background: $green-d; transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Carte succès ──────────────────────────────────────────────
+.success-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.success-card {
+  max-width: 480px;
+  width: 100%;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid $border;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 0.75rem;
+}
+
+.success-card__icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(35,112,68,0.12); color: $green;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.success-card__title { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 800; color: $ink; }
+.success-card__name  { font-size: 1rem; font-weight: 600; color: $green; }
+.success-card__msg   { font-size: 0.8125rem; color: $dim; line-height: 1.5; }
+
+.link-box {
+  width: 100%;
+  background: rgba(35,112,68,0.06);
+  border: 1px solid rgba(35,112,68,0.2);
+  border-radius: 10px; padding: 0.875rem;
+  text-align: left;
+}
+
+.link-box__label {
+  font-size: 0.6875rem; font-weight: 700; color: $dim;
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;
+}
+
+.link-box__row { display: flex; align-items: center; gap: 0.5rem; }
+
+.link-box__url {
+  flex: 1; font-size: 0.75rem; color: $ink; font-weight: 500;
+  word-break: break-all; line-height: 1.4;
+}
+
+.link-box__copy {
+  display: flex; align-items: center; gap: 0.375rem; flex-shrink: 0;
+  padding: 0.375rem 0.75rem; font-size: 0.75rem; font-weight: 600;
+  color: $green; background: $green-xl; border: none; border-radius: 8px;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  &:hover { background: rgba(35,112,68,0.16); }
+}
+
+.btn-new {
+  font-size: 0.875rem; font-weight: 600; color: $green;
+  background: $green-xl; border: none; border-radius: 999px;
+  padding: 0.5rem 1.25rem; cursor: pointer; margin-top: 0.5rem;
+  transition: background 0.15s;
+  &:hover { background: rgba(35,112,68,0.16); }
+}

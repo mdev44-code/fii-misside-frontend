@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:  rgb(35,112,68); $green-d: rgb(22,78,47); $green-xl: rgba(35,112,68,0.10);
+$cream:  rgb(245,240,232); $ink: #0d1a10; $dim: #6b7d6f;
+$border: rgba(35,112,68,0.13); $red: #dc2626; $mx: clamp(1rem,4vw,3.5rem);
+
+:host { display: block; background: $cream; min-height: 100dvh; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+.page { padding: calc(3.5rem + 1.25rem) $mx 5rem; max-width: 580px; margin: 0 auto; }
+
+// ── Hero avatar ───────────────────────────────────────────────
+.profile-hero {
+  display: flex; align-items: center; gap: 1.25rem;
+  margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+
+.avatar-wrap { position: relative; flex-shrink: 0; }
+
+.avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  object-fit: cover; border: 3px solid rgba(35,112,68,0.2);
+  display: flex; align-items: center; justify-content: center;
+
+  &--initials {
+    background: rgba(35,112,68,0.10); color: $green;
+    font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800;
+  }
+
+  &--loading {
+    background: rgba(35,112,68,0.10);
+    display: flex; align-items: center; justify-content: center;
+  }
+}
+
+.avatar-change-btn {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: $green; border: 2.5px solid $cream;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; cursor: pointer; transition: background 0.15s;
+  &:hover:not(:disabled) { background: $green-d; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.file-input-hidden { display: none; }
+
+.profile-hero__name {
+  font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 800; color: $ink; margin-bottom: 6px;
+}
+
+.profile-hero__phone { font-size: 0.8125rem; color: $dim; margin-top: 4px; }
+
+// Badges rôle
+.role-badge {
+  display: inline-flex; padding: 0.2rem 0.625rem; border-radius: 999px;
+  font-size: 0.6875rem; font-weight: 700;
+  &--admin     { background: rgba(35,112,68,0.12); color: $green-d; }
+  &--treasurer { background: rgba(180,120,0,0.10); color: #7a4f00; }
+  &--manager   { background: rgba(30,58,138,0.10); color: #1e3a8a; }
+  &--member    { background: rgba(107,125,111,0.12); color: #4a5a4e; }
+}
+
+.status-badge {
+  display: inline-flex; padding: 0.2rem 0.625rem; border-radius: 999px;
+  font-size: 0.6875rem; font-weight: 700;
+  background: rgba(35,112,68,0.12); color: $green-d;
+}
+
+// ── Onglets ───────────────────────────────────────────────────
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: rgba(255,255,255,0.6); border: 1.5px solid $border;
+  border-radius: 14px; padding: 4px; gap: 4px; margin-bottom: 1.25rem;
+}
+
+.tab {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  height: 42px; border: none; border-radius: 11px; background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem;
+  font-weight: 500; color: $dim; cursor: pointer; transition: all 0.2s;
+
+  &:hover:not(.tab--active) { color: $green; }
+  &--active { background: $green; color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(35,112,68,0.3); }
+}
+
+// ── Form card ─────────────────────────────────────────────────
+.form-card {
+  background: rgba(255,255,255,0.6); border: 1px solid $border;
+  border-radius: 16px; padding: 1.375rem; display: flex; flex-direction: column; gap: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.field-group { display: flex; flex-direction: column; gap: 0.375rem; }
+.field-group--error .field-input { border-color: $red; background: #fef2f2; }
+
+.field-label { font-size: 0.8125rem; font-weight: 600; color: $ink; }
+.req { color: $red; margin-left: 2px; }
+.opt { font-size: 0.6875rem; font-weight: 500; color: $dim; margin-left: 4px; }
+
+.field-wrap { position: relative; }
+.field-icon { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: $dim; pointer-events: none; flex-shrink: 0; }
+
+.field-input {
+  width: 100%; height: 48px; padding: 0 1rem 0 2.75rem;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; color: $ink;
+  background: rgba(255,255,255,0.8); border: 1.5px solid $border;
+  border-radius: 10px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  &::placeholder { color: $dim; }
+  &:focus { border-color: $green; box-shadow: 0 0 0 3px $green-xl; background: #fff; }
+  &--pr { padding-right: 2.75rem; }
+}
+
+.field-eye {
+  position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: $dim; padding: 2px;
+  display: flex; align-items: center;
+  &:hover { color: $green; }
+}
+
+.field-error { font-size: 0.75rem; color: $red; font-weight: 500; }
+
+// ── Info box ──────────────────────────────────────────────────
+.info-box {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.75rem 1rem; background: rgba(35,112,68,0.06);
+  border: 1px solid rgba(35,112,68,0.15); border-radius: 10px;
+  font-size: 0.8125rem; color: $green-d; font-weight: 500;
+  svg { flex-shrink: 0; margin-top: 1px; }
+}
+
+.alert-error {
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 10px; color: $red; font-size: 0.875rem; font-weight: 500;
+}
+
+// ── Submit ────────────────────────────────────────────────────
+.btn-submit {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; height: 50px; background: $green; border: none; border-radius: 12px;
+  color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9375rem; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(35,112,68,0.28); transition: background 0.2s, transform 0.15s;
+  &:hover:not(:disabled) { background: $green-d; transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+}
+
+// ── Readonly card ─────────────────────────────────────────────
+.readonly-card {
+  background: rgba(255,255,255,0.6); border: 1px solid $border; border-radius: 16px; overflow: hidden;
+}
+
+.readonly-card__title {
+  font-family: 'Sora', sans-serif; font-size: 0.875rem; font-weight: 700; color: $ink;
+  padding: 0.875rem 1.125rem; border-bottom: 1px solid $border;
+}
+
+.info-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.875rem 1.125rem; border-bottom: 1px solid $border;
+  &:last-child { border-bottom: none; }
+}
+
+.info-row__label { font-size: 0.8125rem; font-weight: 500; color: $dim; }
+
+// ── Spinners ──────────────────────────────────────────────────
+.spinner {
+  width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: currentColor; border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  &--white { border-top-color: #fff; color: rgba(255,255,255,0.3); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Skeletons ─────────────────────────────────────────────────
+@keyframes shimmer { 0% { background-position: -500px 0; } 100% { background-position: 500px 0; } }
+.skel {
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(35,112,68,0.06) 25%, rgba(35,112,68,0.13) 50%, rgba(35,112,68,0.06) 75%);
+  background-size: 500px 100%; animation: shimmer 1.4s infinite linear;
+  &--form { height: 280px; }
+}

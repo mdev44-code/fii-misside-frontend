@@ -1,0 +1,142 @@
+<app-navbar />
+
+<div class="page">
+
+  <!-- ── En-tête + actions rapides ─────────────────────────── -->
+  <div class="page__header">
+    <div>
+      <h1 class="page__title">Membres</h1>
+      <p class="page__sub">{{ counts().total }} membres actifs</p>
+    </div>
+    <div class="header-actions">
+      <!-- Organigramme — visible par tous -->
+      <a routerLink="/members/org-chart" class="action-btn action-btn--outline">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="8" y="2" width="8" height="4" rx="1"/>
+          <rect x="1" y="18" width="6" height="4" rx="1"/>
+          <rect x="9" y="18" width="6" height="4" rx="1"/>
+          <rect x="17" y="18" width="6" height="4" rx="1"/>
+          <line x1="12" y1="6" x2="12" y2="12"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+          <line x1="12" y1="22" x2="12" y2="15"/>
+          <line x1="20" y1="22" x2="20" y2="15"/>
+          <line x1="4" y1="15" x2="20" y2="15"/>
+          <line x1="12" y1="12" x2="12" y2="15"/>
+        </svg>
+        Organigramme
+      </a>
+      <!-- Inviter — admin seulement -->
+      @if (auth.isAdmin()) {
+        <a routerLink="/members/invite" class="action-btn action-btn--green">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Inviter
+        </a>
+      }
+    </div>
+  </div>
+
+  <!-- ── Compteurs par rôle ────────────────────────────────── -->
+  @if (!loading()) {
+    <div class="role-pills">
+      <div class="role-pill">
+        <span class="role-pill__count">{{ counts().admin }}</span>
+        <span class="role-pill__label">Admin</span>
+      </div>
+      <div class="role-pill">
+        <span class="role-pill__count">{{ counts().treasurer }}</span>
+        <span class="role-pill__label">Comptable</span>
+      </div>
+      <div class="role-pill">
+        <span class="role-pill__count">{{ counts().manager }}</span>
+        <span class="role-pill__label">Gestionnaire</span>
+      </div>
+      <div class="role-pill">
+        <span class="role-pill__count">{{ counts().member }}</span>
+        <span class="role-pill__label">Membres</span>
+      </div>
+    </div>
+  }
+
+  <!-- ── Recherche ─────────────────────────────────────────── -->
+  <div class="search-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input
+      type="text"
+      placeholder="Rechercher un membre…"
+      [value]="search()"
+      (input)="search.set($any($event.target).value)"
+    />
+    @if (search()) {
+      <button (click)="search.set('')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    }
+  </div>
+
+  <!-- ── Grille membres ────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skel-card"></div>
+      }
+    </div>
+
+  } @else if (filtered().length === 0) {
+    <div class="empty">
+      <div class="empty__icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <p class="empty__title">Aucun membre trouvé</p>
+      <p class="empty__sub">Essayez un autre terme de recherche</p>
+    </div>
+
+  } @else {
+    <div class="grid">
+      @for (member of filtered(); track member.id) {
+
+        <!-- ↓ <a> cliquable → détail du membre -->
+        <a [routerLink]="['/members', member.id]" class="card">
+
+          <div class="card__avatar-wrap">
+            @if (member.profile_picture_url) {
+              <img class="card__photo" [src]="member.profile_picture_url" [alt]="member.full_name" />
+            } @else {
+              <div class="card__initials" [attr.data-role]="roleColor(member.role)">
+                {{ initials(member.full_name) }}
+              </div>
+            }
+            <span class="card__role-badge" [attr.data-role]="roleColor(member.role)">
+              {{ roleLabel(member.role) }}
+            </span>
+          </div>
+
+          <div class="card__body">
+            <p class="card__name">{{ member.full_name }}</p>
+            <p class="card__phone">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.47 2 2 0 0 1 3.56 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6.29 6.29l.87-.87a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              {{ member.phone_number }}
+            </p>
+          </div>
+
+        </a>
+      }
+    </div>
+  }
+
+</div>
+
+<app-bottom-nav />

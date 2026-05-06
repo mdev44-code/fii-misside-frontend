@@ -1,0 +1,184 @@
+<app-navbar />
+
+<div class="page">
+
+  <!-- ── Header ───────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Trésorerie</h1>
+      <p class="page-sub">Caisse de l'association</p>
+    </div>
+    <!-- Actions comptable / admin -->
+    @if (auth.isTreasurer()) {
+      <div class="header-actions">
+        <a routerLink="/treasury/actions" [queryParams]="{action: 'deposit'}" class="action-btn action-btn--green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Dépôt
+        </a>
+        <a routerLink="/treasury/actions" [queryParams]="{action: 'expense'}" class="action-btn action-btn--outline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Dépense
+        </a>
+      </div>
+    }
+  </div>
+
+  <!-- ── Solde principal ───────────────────────────────────── -->
+  @if (loadingBalance()) {
+    <div class="skel skel--balance"></div>
+  } @else {
+    <div class="balance-card">
+      <div class="balance-card__left">
+        <p class="balance-card__label">Solde actuel</p>
+        <p class="balance-card__amount">{{ balance()?.balance | fcfa }}</p>
+        @if (balance()?.initialized_by_name) {
+          <p class="balance-card__meta">
+            Initialisée par {{ balance()!.initialized_by_name }}
+          </p>
+        }
+      </div>
+      <div class="balance-card__icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+    </div>
+  }
+
+  <!-- ── Stats rapides ─────────────────────────────────────── -->
+  @if (!loadingTx()) {
+    <div class="stats-row">
+      <div class="stat-mini stat-mini--deposit">
+        <div class="stat-mini__icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="stat-mini__label">Cotisations</p>
+          <p class="stat-mini__value">{{ stats().totalDeposits | fcfa }}</p>
+          <p class="stat-mini__count">{{ stats().countDeposits }} opération(s)</p>
+        </div>
+      </div>
+      <div class="stat-mini stat-mini--expense">
+        <div class="stat-mini__icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="stat-mini__label">Dépenses</p>
+          <p class="stat-mini__value">{{ stats().totalExpenses | fcfa }}</p>
+          <p class="stat-mini__count">{{ stats().countExpenses }} opération(s)</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Historique ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Historique</span>
+      @if (!loadingTx()) {
+        <span class="section-count">{{ totalTx() }} transaction(s)</span>
+      }
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters">
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'all'"     (click)="setFilter('all')">Tout</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'deposit'" (click)="setFilter('deposit')">Cotisations</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'expense'" (click)="setFilter('expense')">Dépenses</button>
+    </div>
+
+    <!-- Liste transactions -->
+    @if (loadingTx()) {
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skel skel--tx"></div>
+      }
+    } @else if (transactions().length === 0) {
+      <div class="empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+        <p>Aucune transaction</p>
+      </div>
+    } @else {
+      <div class="tx-list">
+        @for (tx of transactions(); track tx.id) {
+          <div class="tx-row">
+            <!-- Icône type -->
+            <div class="tx-row__icon" [attr.data-type]="tx.type">
+              @if (tx.type === 'deposit') {
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              } @else if (tx.type === 'expense') {
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              } @else {
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+              }
+            </div>
+
+            <!-- Infos -->
+            <div class="tx-row__info">
+              <p class="tx-row__label">
+                @if (tx.member_name) {
+                  {{ tx.member_name }}
+                } @else if (tx.description) {
+                  {{ tx.description }}
+                } @else {
+                  {{ typeLabel(tx.type) }}
+                }
+              </p>
+              <p class="tx-row__meta">
+                {{ formatDate(tx.performed_at) }} · {{ formatTime(tx.performed_at) }}
+                @if (tx.performed_by_name) {
+                  · {{ tx.performed_by_name }}
+                }
+              </p>
+              @if (tx.project_title) {
+                <span class="tx-row__project">{{ tx.project_title }}</span>
+              }
+            </div>
+
+            <!-- Montant + solde après -->
+            <div class="tx-row__amounts">
+              <p class="tx-row__amount" [attr.data-type]="tx.type">
+                {{ tx.type === 'expense' ? '−' : '+' }}{{ tx.amount | fcfa }}
+              </p>
+              <p class="tx-row__balance-after">→ {{ tx.balance_after | fcfa }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button class="page-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          @for (p of pages; track p) {
+            <button class="page-btn" [class.page-btn--active]="p === currentPage()" (click)="goToPage(p)">{{ p }}</button>
+          }
+          <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+</div>
+
+<app-bottom-nav />

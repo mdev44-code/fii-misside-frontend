@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:    rgb(35, 112, 68);
+$green-d:  rgb(22, 78, 47);
+$green-xl: rgba(35, 112, 68, 0.10);
+$cream:    rgb(245, 240, 232);
+$ink:      #0d1a10;
+$dim:      #6b7d6f;
+$border:   rgba(35, 112, 68, 0.13);
+$radius:   14px;
+$mx: clamp(1rem, 4vw, 3.5rem);  // responsive : 1rem mobile → 3.5rem desktop
+
+:host {
+  display: block;
+  background: $cream;
+  min-height: 100dvh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dash {
+  padding-top: 3.5rem;
+  padding-bottom: 5rem;
+}
+
+// ── Greeting ─────────────────────────────────────────────────
+.greeting {
+  padding: 1.25rem $mx 0.75rem;
+}
+
+.greeting__name {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $ink;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.wave { font-style: normal; }
+
+.greeting__date {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $dim;
+  text-transform: capitalize;
+}
+
+// ── 3 stat cards ─────────────────────────────────────────────
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.625rem;
+  padding: 0.75rem $mx 1rem;  // marge latérale = $mx
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 0.875rem 0.75rem;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid $border;
+  border-radius: $radius;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:active { background: rgba(35,112,68,0.06); }
+
+  &--green {
+    background: $green;
+    border-color: transparent;
+    .stat__label { color: rgba(255,255,255,0.7); }
+    .stat__arrow { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.12); }
+    .stat__value { color: #fff; }
+    .stat__sub   { color: rgba(255,255,255,0.55); }
+  }
+}
+
+.stat__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.625rem;
+}
+
+.stat__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $dim;
+  text-transform: uppercase;
+}
+
+.stat__arrow {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: $green-xl;
+  color: $green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat__value {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: $ink;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+
+  &--sm {
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+  }
+}
+
+.stat__sub {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: $dim;
+}
+
+// ── Card cotisations ──────────────────────────────────────────
+.card {
+  margin: 0 $mx 1rem;     // marge latérale = $mx
+  background: rgba(255,255,255,0.5);
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid $border;
+}
+
+.card__title {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: $ink;
+}
+
+.card__action {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $green;
+  text-decoration: none;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: $green-xl;
+  transition: background 0.15s;
+  &:hover { background: rgba(35,112,68,0.16); }
+}
+
+// ── Bandeau en attente ────────────────────────────────────────
+.pending-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  background: rgba(245,160,0,0.08);
+  border-bottom: 1px solid rgba(245,160,0,0.15);
+  font-size: 0.8125rem;
+  color: #7a5000;
+  font-weight: 500;
+  strong { font-weight: 700; text-transform: capitalize; }
+}
+
+.pending-banner__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(245,160,0,0.15);
+  color: #c07800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// ── Liste cotisations ─────────────────────────────────────────
+.contrib-list { padding: 0.375rem 0; }
+
+.contrib-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(35,112,68,0.04); }
+
+  &--highlight {
+    background: rgba(35,112,68,0.05);
+    .contrib-item__month { color: $green; font-weight: 700; }
+  }
+}
+
+.contrib-item__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: rgba(35,112,68,0.10);
+  color: $green;
+
+  &--green { background: $green; color: #fff; }
+}
+
+.contrib-item__info { flex: 1; min-width: 0; }
+
+.contrib-item__month {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $ink;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contrib-item__amount {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $dim;
+  margin-top: 1px;
+}
+
+// ── Chips statut ─────────────────────────────────────────────
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--confirmed { background: rgba(35,112,68,0.12); color: $green-d; }
+  &--declared  { background: rgba(180,120,0,0.10); color: #7a4f00; }
+  &--pending   { background: rgba(100,110,100,0.12); color: #4a5a4e; }
+  &--late      { background: rgba(180,30,30,0.10); color: #8b1a1a; }
+}
+
+// ── Empty ─────────────────────────────────────────────────────
+.empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: $dim;
+}
+
+// ── Skeletons ─────────────────────────────────────────────────
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skel {
+  border-radius: 12px;
+  background: linear-gradient(90deg,
+    rgba(35,112,68,0.06) 25%,
+    rgba(35,112,68,0.13) 50%,
+    rgba(35,112,68,0.06) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+
+  &--stat { height: 90px; }
+  &--row  { height: 58px; margin: 0.25rem 0; border-radius: 10px; }
+}

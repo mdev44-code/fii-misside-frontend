@@ -1,0 +1,254 @@
+<app-navbar />
+
+<div class="page">
+
+  <a routerLink="/treasury" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Trésorerie
+  </a>
+
+  <div class="page-header">
+    <h1 class="page-title">Enregistrer une opération</h1>
+    <p class="page-sub">Réservé au comptable et à l'administrateur</p>
+  </div>
+
+  <!-- Onglets -->
+  <div class="tabs">
+    <button class="tab" [class.tab--active]="activeTab() === 'deposit'" (click)="switchTab('deposit')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Cotisation (dépôt)
+    </button>
+    <button class="tab" [class.tab--active]="activeTab() === 'expense'" (click)="switchTab('expense')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Dépense (retrait)
+    </button>
+  </div>
+
+  <!-- ── FORMULAIRE DÉPÔT ──────────────────────────────────── -->
+  @if (activeTab() === 'deposit') {
+    <div class="form-card">
+      <div class="form-card__header">
+        <div class="form-card__icon form-card__icon--green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div>
+          <p class="form-card__title">Enregistrer une cotisation</p>
+          <p class="form-card__sub">Confirmer le paiement Wave d'un membre</p>
+        </div>
+      </div>
+
+      <form [formGroup]="depositForm" (ngSubmit)="submitDeposit()" novalidate class="form">
+
+        <!-- Membre — dropdown custom -->
+        <div class="field-group" [class.field-group--error]="isDepositInvalid('member_id')">
+          <label class="field-label">Membre <span class="req">*</span></label>
+          <div class="custom-select" [class.custom-select--open]="openDropdown() === 'member'" (click)="toggleDropdown('member', $event)">
+            <div class="custom-select__trigger">
+              <svg class="custom-select__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span [class.custom-select__placeholder]="!selectedMember()">
+                {{ selectedMember() ? selectedMember()!.full_name + ' — ' + selectedMember()!.phone_number : 'Sélectionner un membre…' }}
+              </span>
+              <svg class="custom-select__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            @if (openDropdown() === 'member') {
+              <div class="custom-select__menu" (click)="$event.stopPropagation()">
+                @for (m of members(); track m.id) {
+                  <div class="custom-select__option" [class.custom-select__option--selected]="selectedMember()?.id === m.id" (click)="selectMember(m)">
+                    <div class="option-avatar">{{ initials(m.full_name) }}</div>
+                    <div>
+                      <p class="option-name">{{ m.full_name }}</p>
+                      <p class="option-sub">{{ m.phone_number }}</p>
+                    </div>
+                    @if (selectedMember()?.id === m.id) {
+                      <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          @if (isDepositInvalid('member_id')) { <span class="field-error">Veuillez sélectionner un membre</span> }
+        </div>
+
+        <!-- Montant + Mois + Année -->
+        <div class="row-3">
+
+          <div class="field-group" [class.field-group--error]="isDepositInvalid('amount')">
+            <label class="field-label">Montant (FCFA) <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
+              <input class="field-input" type="number" formControlName="amount" placeholder="5000" min="1" />
+            </div>
+            @if (isDepositInvalid('amount')) { <span class="field-error">Montant requis (> 0)</span> }
+          </div>
+
+          <!-- Mois dropdown custom -->
+          <div class="field-group">
+            <label class="field-label">Mois <span class="req">*</span></label>
+            <div class="custom-select" [class.custom-select--open]="openDropdown() === 'month'" (click)="toggleDropdown('month', $event)">
+              <div class="custom-select__trigger custom-select__trigger--sm">
+                <span>{{ monthLabel(selectedMonth()) }}</span>
+                <svg class="custom-select__arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              @if (openDropdown() === 'month') {
+                <div class="custom-select__menu custom-select__menu--sm" (click)="$event.stopPropagation()">
+                  @for (m of months; track m.value) {
+                    <div class="custom-select__option custom-select__option--sm" [class.custom-select__option--selected]="selectedMonth() === m.value" (click)="selectMonthVal(m.value)">
+                      {{ m.label }}
+                      @if (selectedMonth() === m.value) {
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Année dropdown custom -->
+          <div class="field-group">
+            <label class="field-label">Année <span class="req">*</span></label>
+            <div class="custom-select" [class.custom-select--open]="openDropdown() === 'year'" (click)="toggleDropdown('year', $event)">
+              <div class="custom-select__trigger custom-select__trigger--sm">
+                <span>{{ selectedYear() }}</span>
+                <svg class="custom-select__arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              @if (openDropdown() === 'year') {
+                <div class="custom-select__menu custom-select__menu--sm" (click)="$event.stopPropagation()">
+                  @for (y of years; track y) {
+                    <div class="custom-select__option custom-select__option--sm" [class.custom-select__option--selected]="selectedYear() === y" (click)="selectYearVal(y)">
+                      {{ y }}
+                      @if (selectedYear() === y) {
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Note optionnelle -->
+        <div class="field-group">
+          <label class="field-label">Note <span class="opt">optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+            <input class="field-input" type="text" formControlName="description" placeholder="Ex: cotisation avril reçue via Wave" />
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert-error">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-submit btn-submit--green" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> Enregistrement… }
+          @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Confirmer la cotisation
+          }
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- ── FORMULAIRE DÉPENSE ────────────────────────────────── -->
+  @if (activeTab() === 'expense') {
+    <div class="form-card">
+      <div class="form-card__header">
+        <div class="form-card__icon form-card__icon--red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div>
+          <p class="form-card__title">Enregistrer une dépense</p>
+          <p class="form-card__sub">Après retrait Wave effectué</p>
+        </div>
+      </div>
+
+      <form [formGroup]="expenseForm" (ngSubmit)="submitExpense()" novalidate class="form">
+
+        <!-- Montant -->
+        <div class="field-group" [class.field-group--error]="isExpenseInvalid('amount')">
+          <label class="field-label">Montant (FCFA) <span class="req">*</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
+            <input class="field-input" type="number" formControlName="amount" placeholder="50000" min="1" />
+          </div>
+          @if (isExpenseInvalid('amount')) { <span class="field-error">Montant requis (> 0)</span> }
+        </div>
+
+        <!-- Description -->
+        <div class="field-group" [class.field-group--error]="isExpenseInvalid('description')">
+          <label class="field-label">Description <span class="req">*</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+            <input class="field-input" type="text" formControlName="description" placeholder="Ex: achat matériel réunion" />
+          </div>
+          @if (isExpenseInvalid('description')) { <span class="field-error">Description requise (min 5 caractères)</span> }
+        </div>
+
+        <!-- Projet lié — dropdown custom -->
+        <div class="field-group">
+          <label class="field-label">Projet lié <span class="opt">optionnel</span></label>
+          <div class="custom-select" [class.custom-select--open]="openDropdown() === 'project'" (click)="toggleDropdown('project', $event)">
+            <div class="custom-select__trigger">
+              <svg class="custom-select__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span [class.custom-select__placeholder]="!selectedProject()">
+                {{ selectedProject() ? selectedProject()!.title : 'Aucun projet' }}
+              </span>
+              <svg class="custom-select__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            @if (openDropdown() === 'project') {
+              <div class="custom-select__menu" (click)="$event.stopPropagation()">
+                <div class="custom-select__option" [class.custom-select__option--selected]="!selectedProject()" (click)="selectProject(null)">
+                  <span class="option-none">Aucun projet</span>
+                  @if (!selectedProject()) {
+                    <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  }
+                </div>
+                @for (p of projects(); track p.id) {
+                  <div class="custom-select__option" [class.custom-select__option--selected]="selectedProject()?.id === p.id" (click)="selectProject(p)">
+                    <div>
+                      <p class="option-name">{{ p.title }}</p>
+                      <p class="option-sub option-sub--status">{{ p.status }}</p>
+                    </div>
+                    @if (selectedProject()?.id === p.id) {
+                      <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Cette action déduira le montant de la caisse. Assurez-vous que le retrait Wave a bien été effectué.
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert-error">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-submit btn-submit--red" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> Enregistrement… }
+          @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Enregistrer la dépense
+          }
+        </button>
+      </form>
+    </div>
+  }
+
+</div>
+
+<app-bottom-nav />

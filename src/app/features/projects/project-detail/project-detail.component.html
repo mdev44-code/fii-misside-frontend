@@ -1,0 +1,168 @@
+<app-navbar />
+
+<div class="page">
+
+  <a routerLink="/projects" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Projets
+  </a>
+
+  @if (loading()) {
+    <div class="skel skel--header"></div>
+    <div class="skel skel--card"></div>
+    <div class="skel skel--card"></div>
+
+  } @else if (!project()) {
+    <div class="error-state">
+      <p>Projet introuvable.</p>
+      <a routerLink="/projects" class="back-link">Retour à la liste</a>
+    </div>
+
+  } @else {
+    <!-- ── Header projet ──────────────────────────────────── -->
+    <div class="proj-header">
+      <div class="proj-header__top">
+        <span class="chip chip--{{ project()!.status }}">{{ statusLabel(project()!.status) }}</span>
+        @if (auth.isManager()) {
+          <a [routerLink]="['/projects', project()!.id, 'edit']" class="edit-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Modifier
+          </a>
+        }
+      </div>
+      <h1 class="proj-header__title">{{ project()!.title }}</h1>
+      @if (project()!.description) {
+        <p class="proj-header__desc">{{ project()!.description }}</p>
+      }
+      <p class="proj-header__creator">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Créé par {{ project()!.creator_name }} · {{ formatDate(project()!.created_at) }}
+      </p>
+    </div>
+
+    <!-- ── Budget card ────────────────────────────────────── -->
+    <div class="info-card">
+      <h2 class="info-card__title">Budget</h2>
+
+      @if (project()!.budget_allocated) {
+        <div class="budget-section">
+          <div class="budget-nums">
+            <div class="budget-item">
+              <p class="budget-item__label">Alloué</p>
+              <p class="budget-item__value">{{ project()!.budget_allocated | fcfa }}</p>
+            </div>
+            <div class="budget-item">
+              <p class="budget-item__label">Dépensé</p>
+              <p class="budget-item__value budget-item__value--spent">{{ project()!.budget_spent | fcfa }}</p>
+            </div>
+            <div class="budget-item">
+              <p class="budget-item__label">Restant</p>
+              <p class="budget-item__value budget-item__value--green">{{ project()!.budget_remaining | fcfa }}</p>
+            </div>
+          </div>
+          <div class="budget-progress">
+            <div class="budget-progress__bar">
+              <div class="budget-progress__fill" [style.width.%]="progressPercent()" [attr.data-status]="project()!.status"></div>
+            </div>
+            <span class="budget-progress__pct">{{ progressPercent() }}%</span>
+          </div>
+        </div>
+      } @else {
+        <div class="no-budget-notice">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Aucun budget défini. Le projet ne peut pas démarrer sans budget.
+          @if (auth.isManager()) {
+            <a [routerLink]="['/projects', project()!.id, 'edit']" class="inline-link">Ajouter un budget</a>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Dates ─────────────────────────────────────────── -->
+    <div class="info-card">
+      <h2 class="info-card__title">Calendrier</h2>
+      <div class="dates-row">
+        <div class="date-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <div>
+            <p class="date-item__label">Début</p>
+            <p class="date-item__value">{{ formatDate(project()!.start_date) }}</p>
+          </div>
+        </div>
+        <div class="date-sep">→</div>
+        <div class="date-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+          </svg>
+          <div>
+            <p class="date-item__label">Fin prévue</p>
+            <p class="date-item__value">{{ formatDate(project()!.end_date) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Changer le statut (manager/admin seulement) ────── -->
+    @if (auth.isManager()) {
+      <div class="info-card">
+        <h2 class="info-card__title">Changer le statut</h2>
+        <div class="status-actions">
+          @for (s of availableStatuses(); track s.value) {
+            <button
+              class="status-btn status-btn--{{ s.value }}"
+              [disabled]="s.disabled || updatingStatus()"
+              (click)="changeStatus(s.value)"
+            >
+              @if (updatingStatus()) { <span class="spinner"></span> }
+              {{ s.label }}
+            </button>
+          }
+        </div>
+        @if (!project()!.budget_allocated && project()!.status === 'draft') {
+          <p class="status-hint">⚠️ Ajoutez un budget avant de démarrer le projet.</p>
+        }
+      </div>
+
+      <!-- Danger zone -->
+      <div class="danger-zone">
+        <h2 class="danger-zone__title">Zone dangereuse</h2>
+        <p class="danger-zone__sub">
+          Si des transactions sont liées à ce projet, préférez le passer en "Annulé" plutôt que de le supprimer.
+        </p>
+        @if (!showDeleteConfirm()) {
+          <button class="btn-delete" (click)="showDeleteConfirm.set(true)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+              <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+            Supprimer ce projet
+          </button>
+        } @else {
+          <div class="delete-confirm">
+            <p class="delete-confirm__text">Êtes-vous sûr ? Cette action est irréversible.</p>
+            <div class="delete-confirm__actions">
+              <button class="btn-cancel" (click)="showDeleteConfirm.set(false)">Annuler</button>
+              <button class="btn-confirm-delete" [disabled]="deleting()" (click)="deleteProject()">
+                @if (deleting()) { <span class="spinner"></span> }
+                Oui, supprimer
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<app-bottom-nav />

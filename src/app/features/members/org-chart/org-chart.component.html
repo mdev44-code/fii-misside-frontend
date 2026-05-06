@@ -1,0 +1,68 @@
+<app-navbar />
+
+<div class="page">
+
+  <a routerLink="/members" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Membres
+  </a>
+
+  <div class="page__header">
+    <h1 class="page__title">Organigramme</h1>
+    @if (!loading()) {
+      <p class="page__sub">{{ totalMembers() }} membres au total</p>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-groups">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="skel skel--group"></div>
+      }
+    </div>
+
+  } @else if (!orgChart()) {
+    <div class="empty">
+      <p>Impossible de charger l'organigramme.</p>
+    </div>
+
+  } @else {
+    <div class="org">
+      @for (group of groups; track group.key) {
+        @if (getMembers(group.key).length > 0) {
+          <div class="group">
+            <!-- En-tête groupe -->
+            <div class="group__header">
+              <div class="group__dot" [attr.data-role]="group.role"></div>
+              <span class="group__label">{{ group.label }}</span>
+              <span class="group__count">{{ getMembers(group.key).length }}</span>
+            </div>
+
+            <!-- Membres du groupe -->
+            <div class="group__members">
+              @for (member of getMembers(group.key); track member.id) {
+                <a [routerLink]="['/members', member.id]" class="member-row">
+                  <div class="member-row__avatar" [attr.data-role]="group.role">
+                    {{ initials(member.full_name) }}
+                  </div>
+                  <div class="member-row__info">
+                    <p class="member-row__name">{{ member.full_name }}</p>
+                    <p class="member-row__phone">{{ member.phone_number }}</p>
+                  </div>
+                  <svg class="member-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </a>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+</div>
+
+<app-bottom-nav />

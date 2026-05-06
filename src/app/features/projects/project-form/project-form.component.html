@@ -1,0 +1,115 @@
+<app-navbar />
+
+<div class="page">
+
+  <a [routerLink]="isEdit() ? ['/projects', projectId()] : '/projects'" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    {{ isEdit() ? 'Détail du projet' : 'Projets' }}
+  </a>
+
+  <div class="form-header">
+    <h1 class="form-title">{{ pageTitle() }}</h1>
+    <p class="form-sub">
+      @if (!isEdit()) { Un projet est créé en statut "Brouillon". Vous pourrez le démarrer une fois le budget défini. }
+      @else { Modifiez les informations du projet. }
+    </p>
+  </div>
+
+  @if (loadingData()) {
+    <div class="skel skel--form"></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="form-card">
+
+      <!-- Titre -->
+      <div class="field-group" [class.field-group--error]="isInvalid('title')">
+        <label class="field-label">Titre <span class="req">*</span></label>
+        <div class="field-wrap">
+          <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <input class="field-input" type="text" formControlName="title" placeholder="Ex: Construction du puits" />
+        </div>
+        @if (isInvalid('title')) { <span class="field-error">Titre requis (min 3 caractères)</span> }
+      </div>
+
+      <!-- Description -->
+      <div class="field-group">
+        <label class="field-label">Description <span class="opt">optionnel</span></label>
+        <textarea class="field-textarea" formControlName="description" rows="3"
+                  placeholder="Décrivez l'objectif du projet, les bénéficiaires, etc."></textarea>
+      </div>
+
+      <!-- Budget + dates sur la même ligne -->
+      <div class="row-3">
+
+        <div class="field-group" [class.field-group--error]="isInvalid('budget_allocated')">
+          <label class="field-label">Budget (FCFA) <span class="opt">optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/>
+            </svg>
+            <input class="field-input" type="number" formControlName="budget_allocated" placeholder="500000" min="0" />
+          </div>
+          @if (isInvalid('budget_allocated')) { <span class="field-error">Budget invalide</span> }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Date de début <span class="opt">optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <input class="field-input" type="date" formControlName="start_date" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Date de fin <span class="opt">optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+            </svg>
+            <input class="field-input" type="date" formControlName="end_date" />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Note info sur démarrage -->
+      @if (!isEdit()) {
+        <div class="info-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Le projet sera créé en statut <strong>Brouillon</strong>. Pour le démarrer, un budget est obligatoire.
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="alert-error">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="form-actions">
+        <a [routerLink]="isEdit() ? ['/projects', projectId()] : '/projects'" class="btn-cancel">
+          Annuler
+        </a>
+        <button type="submit" class="btn-submit" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> Enregistrement… }
+          @else {
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ submitLabel() }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+</div>
+
+<app-bottom-nav />

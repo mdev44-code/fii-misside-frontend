@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:    rgb(35, 112, 68);
+$green-d:  rgb(22, 78, 47);
+$green-xl: rgba(35, 112, 68, 0.10);
+$cream:    rgb(245, 240, 232);
+$ink:      #0d1a10;
+$dim:      #6b7d6f;
+$border:   rgba(35, 112, 68, 0.13);
+$orange:   #c07800;
+$red:      #dc2626;
+$mx:       clamp(1rem, 4vw, 3.5rem);
+
+:host { display: block; background: $cream; min-height: 100dvh; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+
+.page { padding: calc(3.5rem + 1.25rem) $mx 5rem; }
+
+// ── Header ────────────────────────────────────────────────────
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+}
+
+.page-title { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: $ink; }
+.page-sub   { font-size: 0.8125rem; color: $dim; margin-top: 2px; }
+
+.action-btn {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.5rem 0.875rem; font-size: 0.8125rem; font-weight: 600;
+  color: $green; background: rgba(255,255,255,0.6);
+  border: 1.5px solid $border; border-radius: 10px;
+  text-decoration: none; white-space: nowrap; transition: all 0.15s;
+  &:hover { background: $green-xl; border-color: rgba(35,112,68,0.3); }
+}
+
+// ── Stats grid ────────────────────────────────────────────────
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.625rem; margin-bottom: 0.75rem;
+
+  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.6); border: 1px solid $border;
+  border-radius: 12px; padding: 0.875rem 0.75rem; text-align: center;
+
+  &--green { background: rgba(35,112,68,0.08); border-color: rgba(35,112,68,0.2); }
+  &--orange{ background: rgba(192,120,0,0.07); border-color: rgba(192,120,0,0.2); }
+  &--red   { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.15); }
+}
+
+.stat-card__value {
+  font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800;
+  color: $ink; line-height: 1; margin-bottom: 4px;
+
+  .stat-card--green & { color: $green; }
+  .stat-card--orange & { color: $orange; }
+  .stat-card--red & { color: $red; }
+}
+
+.stat-card__label { font-size: 0.6875rem; font-weight: 600; color: $dim; text-transform: uppercase; letter-spacing: 0.05em; }
+
+// ── Total banner ──────────────────────────────────────────────
+.total-banner {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+  background: rgba(35,112,68,0.07); border: 1px solid rgba(35,112,68,0.15);
+  border-radius: 10px; font-size: 0.875rem; color: $green-d; font-weight: 500;
+  strong { font-weight: 800; font-family: 'Sora', sans-serif; }
+}
+
+// ── Filtres ───────────────────────────────────────────────────
+.filters {
+  display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 1rem;
+}
+
+.filter-btn {
+  padding: 0.375rem 0.875rem; border: 1.5px solid $border; border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8125rem;
+  font-weight: 500; color: $dim; background: rgba(255,255,255,0.6);
+  cursor: pointer; transition: all 0.15s;
+  &:hover { border-color: rgba(35,112,68,0.3); color: $green; }
+  &--active { background: $green; border-color: $green; color: #fff; font-weight: 600; }
+}
+
+// ── Liste cotisations ─────────────────────────────────────────
+.contrib-list {
+  background: rgba(255,255,255,0.6); border: 1px solid $border;
+  border-radius: 16px; overflow: hidden;
+}
+
+.contrib-row {
+  display: flex; align-items: center; gap: 0.875rem;
+  padding: 0.875rem 1.125rem; border-bottom: 1px solid $border;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(35,112,68,0.03); }
+  &--current { background: rgba(35,112,68,0.04); }
+}
+
+.contrib-row__avatar {
+  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif; font-size: 0.6875rem; font-weight: 800;
+  letter-spacing: 0.03em;
+
+  &[data-status="confirmed"] { background: rgba(35,112,68,0.12); color: $green-d; }
+  &[data-status="declared"]  { background: rgba(192,120,0,0.10); color: $orange; }
+  &[data-status="pending"]   { background: rgba(107,125,111,0.12); color: $dim; }
+  &[data-status="late"]      { background: rgba(220,38,38,0.10); color: $red; }
+}
+
+.contrib-row__info { flex: 1; min-width: 0; }
+
+.contrib-row__month {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.9375rem; font-weight: 600; color: $ink;
+  text-transform: capitalize; margin-bottom: 2px;
+}
+
+.current-badge {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
+  background: $green; color: #fff;
+}
+
+.contrib-row__amount {
+  font-size: 0.875rem; font-weight: 600; color: $green;
+  font-family: 'Sora', sans-serif;
+  &--empty { color: $dim; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; font-style: italic; }
+}
+
+// ── Chips ─────────────────────────────────────────────────────
+.chip {
+  display: inline-flex; padding: 0.2rem 0.625rem; border-radius: 999px;
+  font-size: 0.6875rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+  &--confirmed { background: rgba(35,112,68,0.12); color: $green-d; }
+  &--declared  { background: rgba(192,120,0,0.10); color: $orange; }
+  &--pending   { background: rgba(107,125,111,0.12); color: #4a5a4e; }
+  &--late      { background: rgba(220,38,38,0.10); color: #8b1a1a; }
+}
+
+// ── Empty ─────────────────────────────────────────────────────
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 3rem 1rem; text-align: center;
+}
+.empty__icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: $green-xl; color: $green;
+  display: flex; align-items: center; justify-content: center;
+}
+.empty__title { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: $ink; }
+.empty__sub   { font-size: 0.8125rem; color: $dim; }
+
+// ── Skeletons ─────────────────────────────────────────────────
+@keyframes shimmer {
+  0%   { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
+}
+.skel {
+  border-radius: 12px; margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, rgba(35,112,68,0.06) 25%, rgba(35,112,68,0.13) 50%, rgba(35,112,68,0.06) 75%);
+  background-size: 500px 100%; animation: shimmer 1.4s infinite linear;
+  &--row { height: 68px; }
+}

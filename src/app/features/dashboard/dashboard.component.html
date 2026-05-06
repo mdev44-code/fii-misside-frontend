@@ -1,0 +1,126 @@
+<app-navbar />
+
+<div class="dash">
+
+  <!-- ── Greeting ─────────────────────────────────────────── -->
+  <div class="greeting">
+    <h1 class="greeting__name">{{ firstName() }} <span class="wave">👋</span></h1>
+    <p class="greeting__date">{{ today }}</p>
+  </div>
+
+  <!-- ── 3 stat cards ─────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="stats">
+      <div class="skel skel--stat"></div>
+      <div class="skel skel--stat"></div>
+      <div class="skel skel--stat"></div>
+    </div>
+  } @else {
+    <div class="stats">
+
+      <!-- Caisse -->
+      <a routerLink="/treasury" class="stat stat--green">
+        <div class="stat__top">
+          <span class="stat__label">Caisse</span>
+          <span class="stat__arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </span>
+        </div>
+        <p class="stat__value stat__value--sm">{{ balance() | fcfa }}</p>
+        <p class="stat__sub">Solde actuel</p>
+      </a>
+
+      <!-- Membres -->
+      <a routerLink="/members" class="stat">
+        <div class="stat__top">
+          <span class="stat__label">Membres</span>
+          <span class="stat__arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </span>
+        </div>
+        <p class="stat__value">{{ membersCount() }}</p>
+        <p class="stat__sub">Actifs</p>
+      </a>
+
+      <!-- Projets -->
+      <a routerLink="/projects" class="stat">
+        <div class="stat__top">
+          <span class="stat__label">Projets</span>
+          <span class="stat__arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </span>
+        </div>
+        <p class="stat__value">{{ projectsCount() }}</p>
+        <p class="stat__sub">Total</p>
+      </a>
+
+    </div>
+  }
+
+  <!-- ── Mes cotisations (style Team Collaboration) ─────────── -->
+  <div class="card">
+    <div class="card__head">
+      <h2 class="card__title">Mes cotisations</h2>
+      <a routerLink="/contributions" class="card__action">Voir tout</a>
+    </div>
+
+    @if (loading()) {
+      @for (i of [1,2,3]; track i) {
+        <div class="skel skel--row"></div>
+      }
+
+    } @else {
+
+      <!-- Bandeau mois courant si pas de cotisation -->
+      @if (!hasCurrentMonth()) {
+        <div class="pending-banner">
+          <div class="pending-banner__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <span>Cotisation de <strong>{{ currentMonthLabel }}</strong> en attente</span>
+        </div>
+      }
+
+      <!-- Liste historique -->
+      @if (contributions().length === 0 && hasCurrentMonth()) {
+        <div class="empty-state">Aucune cotisation enregistrée</div>
+      } @else {
+        <div class="contrib-list">
+          @for (c of contributions(); track c.id) {
+            <div class="contrib-item" [class.contrib-item--highlight]="isCurrentMonth(c)">
+
+              <!-- Avatar mois -->
+              <div class="contrib-item__avatar" [class.contrib-item__avatar--green]="c.status === 'confirmed'">
+                {{ monthInitial(c) }}
+              </div>
+
+              <!-- Info -->
+              <div class="contrib-item__info">
+                <p class="contrib-item__month">{{ monthLabel(c) }}</p>
+                <p class="contrib-item__amount">{{ c.amount | fcfa }}</p>
+              </div>
+
+              <!-- Chip statut -->
+              <span class="chip chip--{{ c.status }}">{{ statusLabel(c.status) }}</span>
+
+            </div>
+          }
+        </div>
+      }
+
+    }
+  </div>
+
+</div>
+
+<app-bottom-nav />

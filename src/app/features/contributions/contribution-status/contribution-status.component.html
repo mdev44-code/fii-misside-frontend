@@ -1,0 +1,136 @@
+<app-navbar />
+
+<div class="page" (click)="closeDropdowns()">
+
+  <!-- ── Header ───────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="page-header__left">
+      <a routerLink="/contributions" class="back-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title">Rapport mensuel</h1>
+        <p class="page-sub">Statut des cotisations</p>
+      </div>
+    </div>
+
+    <!-- Sélecteurs mois/année -->
+    <div class="period-pickers">
+
+      <div class="picker" [class.picker--open]="openDropdown() === 'month'" (click)="toggleDropdown('month', $event)">
+        <span>{{ monthLabel(selectedMonth()) }}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        @if (openDropdown() === 'month') {
+          <div class="picker__menu" (click)="$event.stopPropagation()">
+            @for (m of months; track m.value) {
+              <div class="picker__option" [class.picker__option--active]="selectedMonth() === m.value" (click)="changeMonth(m.value)">
+                {{ m.label }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="picker" [class.picker--open]="openDropdown() === 'year'" (click)="toggleDropdown('year', $event)">
+        <span>{{ selectedYear() }}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        @if (openDropdown() === 'year') {
+          <div class="picker__menu" (click)="$event.stopPropagation()">
+            @for (y of years; track y) {
+              <div class="picker__option" [class.picker__option--active]="selectedYear() === y" (click)="changeYear(y)">
+                {{ y }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Résumé / stats ────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="skel skel--summary"></div>
+    @for (i of [1,2,3,4]; track i) { <div class="skel skel--row"></div> }
+
+  } @else if (report()) {
+    <!-- Barre de progression globale -->
+    <div class="summary-card">
+      <div class="summary-card__top">
+        <div>
+          <p class="summary-card__label">{{ monthLabel(selectedMonth()) }} {{ selectedYear() }}</p>
+          <p class="summary-card__title">{{ report()!.confirmed_count }} / {{ report()!.total_members }} membres ont cotisé</p>
+        </div>
+        <div class="summary-card__pct">{{ progressPercent() }}%</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-bar__fill" [style.width.%]="progressPercent()"></div>
+      </div>
+
+      <div class="summary-card__stats">
+        <div class="stat-pill stat-pill--green">
+          <span class="stat-pill__n">{{ report()!.confirmed_count }}</span>
+          Confirmées
+        </div>
+        <div class="stat-pill stat-pill--orange">
+          <span class="stat-pill__n">{{ report()!.declared_count }}</span>
+          Déclarées
+        </div>
+        <div class="stat-pill stat-pill--grey">
+          <span class="stat-pill__n">{{ report()!.pending_count }}</span>
+          En attente
+        </div>
+        <div class="stat-pill stat-pill--red">
+          <span class="stat-pill__n">{{ report()!.late_count }}</span>
+          En retard
+        </div>
+      </div>
+
+      @if (report()!.total_collected > 0) {
+        <div class="summary-card__total">
+          Total collecté ce mois : <strong>{{ report()!.total_collected | fcfa }}</strong>
+        </div>
+      }
+    </div>
+
+    <!-- Filtres membres -->
+    <div class="filters">
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'all'"       (click)="activeFilter.set('all')">Tous</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'confirmed'" (click)="activeFilter.set('confirmed')">Confirmées</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'declared'"  (click)="activeFilter.set('declared')">Déclarées</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'pending'"   (click)="activeFilter.set('pending')">En attente</button>
+      <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'late'"      (click)="activeFilter.set('late')">Retard</button>
+    </div>
+
+    <!-- Liste membres -->
+    @if (filteredMembers().length === 0) {
+      <div class="empty">Aucun membre dans cette catégorie</div>
+    } @else {
+      <div class="member-list">
+        @for (m of filteredMembers(); track m.member_id) {
+          <div class="member-row">
+            <div class="member-row__avatar" [attr.data-status]="m.status">
+              {{ initials(m.full_name) }}
+            </div>
+            <div class="member-row__info">
+              <p class="member-row__name">{{ m.full_name }}</p>
+              <p class="member-row__phone">{{ m.phone_number }}</p>
+            </div>
+            <div class="member-row__right">
+              @if (m.amount) {
+                <p class="member-row__amount">{{ m.amount | fcfa }}</p>
+              }
+              <span class="chip chip--{{ m.status }}">{{ statusLabel(m.status) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>
+
+<app-bottom-nav />

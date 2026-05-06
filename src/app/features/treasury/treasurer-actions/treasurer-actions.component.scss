@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:    rgb(35, 112, 68);
+$green-d:  rgb(22, 78, 47);
+$green-xl: rgba(35, 112, 68, 0.10);
+$cream:    rgb(245, 240, 232);
+$ink:      #0d1a10;
+$dim:      #6b7d6f;
+$border:   rgba(35, 112, 68, 0.13);
+$red:      #dc2626;
+$red-bg:   rgba(220, 38, 38, 0.08);
+$mx:       clamp(1rem, 4vw, 3.5rem);
+
+:host { display: block; background: $cream; min-height: 100dvh; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+
+.page { padding: calc(3.5rem + 1rem) $mx 5rem; max-width: 700px; margin: 0 auto; }
+
+.back-btn {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  font-size: 0.875rem; font-weight: 600; color: $green;
+  text-decoration: none; margin-bottom: 1.25rem;
+  &:hover { text-decoration: underline; }
+}
+
+.page-header { margin-bottom: 1.5rem; }
+.page-title { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: $ink; margin-bottom: 2px; }
+.page-sub   { font-size: 0.8125rem; color: $dim; font-weight: 500; }
+
+// ── Onglets ───────────────────────────────────────────────────
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: rgba(255,255,255,0.6); border: 1.5px solid $border;
+  border-radius: 14px; padding: 4px; gap: 4px; margin-bottom: 1.5rem;
+}
+
+.tab {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  height: 44px; border: none; border-radius: 11px; background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+  color: $dim; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+
+  &:hover:not(.tab--active) { background: rgba(35,112,68,0.05); color: $green; }
+  &--active { background: $green; color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(35,112,68,0.3); }
+}
+
+// ── Form card ─────────────────────────────────────────────────
+.form-card {
+  background: rgba(255,255,255,0.6); border: 1px solid $border;
+  border-radius: 16px; overflow: hidden;
+}
+
+.form-card__header {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.125rem 1.375rem; border-bottom: 1px solid $border;
+}
+
+.form-card__icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+
+  &--green { background: rgba(35,112,68,0.12); color: $green; }
+  &--red   { background: $red-bg; color: $red; }
+}
+
+.form-card__title { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: $ink; }
+.form-card__sub   { font-size: 0.8125rem; color: $dim; margin-top: 2px; }
+
+// ── Formulaire ────────────────────────────────────────────────
+.form {
+  padding: 1.375rem; display: flex; flex-direction: column; gap: 1.125rem;
+}
+
+.row-3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.875rem;
+  @media (max-width: 580px) { grid-template-columns: 1fr; }
+}
+
+.field-group {
+  display: flex; flex-direction: column; gap: 0.375rem;
+  &.field-group--error .field-input {
+    border-color: $red; background: #fef2f2;
+    &:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.10); }
+  }
+}
+
+.field-label { font-size: 0.8125rem; font-weight: 600; color: $ink; }
+.req { color: $red; margin-left: 2px; }
+.opt { font-size: 0.6875rem; font-weight: 500; color: $dim; margin-left: 4px; }
+
+.field-wrap { position: relative; }
+
+.field-icon {
+  position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+  color: $dim; pointer-events: none;
+}
+
+.field-input {
+  width: 100%; height: 48px; padding: 0 1rem 0 2.75rem;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; color: $ink;
+  background: rgba(255,255,255,0.8); border: 1.5px solid $border;
+  border-radius: 10px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: $dim; }
+  &:focus { border-color: $green; box-shadow: 0 0 0 3px $green-xl; background: #fff; }
+}
+
+.field-select {
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%236b7d6f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.field-error { font-size: 0.75rem; color: $red; font-weight: 500; }
+
+// ── Warning box ───────────────────────────────────────────────
+.warning-box {
+  display: flex; align-items: flex-start; gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 10px; font-size: 0.8125rem; color: #78350f; font-weight: 500; line-height: 1.5;
+  svg { flex-shrink: 0; margin-top: 1px; color: #d97706; }
+}
+
+// ── Alert error ───────────────────────────────────────────────
+.alert-error {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 10px; color: $red; font-size: 0.875rem; font-weight: 500;
+}
+
+// ── Boutons submit ────────────────────────────────────────────
+.btn-submit {
+  display: flex; align-items: center; justify-content: center; gap: 0.625rem;
+  width: 100%; height: 50px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9375rem; font-weight: 600;
+  color: #fff; border: none; border-radius: 12px; cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+
+  &--green { background: $green; box-shadow: 0 4px 14px rgba(35,112,68,0.28); &:hover:not(:disabled) { background: $green-d; transform: translateY(-1px); } }
+  &--red   { background: $red;   box-shadow: 0 4px 14px rgba(220,38,38,0.22); &:hover:not(:disabled) { background: darken($red, 8%); transform: translateY(-1px); } }
+  &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+}
+
+.spinner {
+  width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; border-radius: 50%; animation: spin 0.65s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Dropdowns custom ──────────────────────────────────────────
+.custom-select {
+  position: relative;
+  user-select: none;
+}
+
+.custom-select__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 48px;
+  padding: 0 1rem 0 2.75rem;
+  background: rgba(255,255,255,0.8);
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  color: $ink;
+
+  .custom-select--open & {
+    border-color: $green;
+    box-shadow: 0 0 0 3px $green-xl;
+    background: #fff;
+  }
+
+  // Variante sans icône gauche (mois/année)
+  &--sm {
+    padding: 0 1rem;
+  }
+}
+
+.custom-select__icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $dim;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.custom-select__placeholder { color: $dim; }
+
+.custom-select__arrow {
+  margin-left: auto;
+  color: $dim;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+
+  .custom-select--open & { transform: rotate(180deg); }
+}
+
+// Menu déroulant
+.custom-select__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  z-index: 500;
+  background: $cream;
+  border: 1.5px solid $border;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+
+  &--sm { max-height: 220px; }
+}
+
+// Option
+.custom-select__option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid $border;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(35,112,68,0.05); }
+
+  &--selected { background: rgba(35,112,68,0.07); }
+
+  &--sm {
+    padding: 0.625rem 1rem;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $ink;
+  }
+}
+
+.option-avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(35,112,68,0.10); color: $green;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif; font-size: 0.6875rem; font-weight: 800;
+}
+
+.option-name { font-size: 0.875rem; font-weight: 600; color: $ink; }
+.option-sub  { font-size: 0.75rem; color: $dim; margin-top: 1px; }
+.option-sub--status { text-transform: capitalize; }
+.option-none { font-size: 0.875rem; font-weight: 500; color: $dim; }
+.option-check { margin-left: auto; color: $green; flex-shrink: 0; }

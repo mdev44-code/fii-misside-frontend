@@ -1,0 +1,121 @@
+<app-navbar />
+
+<div class="page">
+
+  <!-- ── Header ───────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Projets</h1>
+      <p class="page-sub">{{ counts().total }} projet(s) au total</p>
+    </div>
+    @if (auth.isManager()) {
+      <a routerLink="/projects/new" class="btn-new">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Nouveau projet
+      </a>
+    }
+  </div>
+
+  <!-- ── Stats rapides ─────────────────────────────────────── -->
+  @if (!loading()) {
+    <div class="stat-pills">
+      <button class="stat-pill" [class.stat-pill--active]="activeFilter() === 'all'" (click)="activeFilter.set('all')">
+        <span class="stat-pill__n">{{ counts().total }}</span> Tous
+      </button>
+      <button class="stat-pill stat-pill--blue" [class.stat-pill--active]="activeFilter() === 'in_progress'" (click)="activeFilter.set('in_progress')">
+        <span class="stat-pill__n">{{ counts().in_progress }}</span> En cours
+      </button>
+      <button class="stat-pill stat-pill--grey" [class.stat-pill--active]="activeFilter() === 'draft'" (click)="activeFilter.set('draft')">
+        <span class="stat-pill__n">{{ counts().draft }}</span> Brouillons
+      </button>
+      <button class="stat-pill stat-pill--green" [class.stat-pill--active]="activeFilter() === 'completed'" (click)="activeFilter.set('completed')">
+        <span class="stat-pill__n">{{ counts().completed }}</span> Terminés
+      </button>
+    </div>
+  }
+
+  <!-- ── Liste projets ─────────────────────────────────────── -->
+  @if (loading()) {
+    @for (i of [1,2,3,4]; track i) { <div class="skel skel--card"></div> }
+
+  } @else if (filtered().length === 0) {
+    <div class="empty">
+      <div class="empty__icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </div>
+      <p class="empty__title">Aucun projet</p>
+      <p class="empty__sub">
+        @if (auth.isManager()) { Créez votre premier projet. }
+        @else { Aucun projet dans cette catégorie. }
+      </p>
+      @if (auth.isManager()) {
+        <a routerLink="/projects/new" class="empty__cta">Créer un projet</a>
+      }
+    </div>
+
+  } @else {
+    <div class="project-list">
+      @for (p of filtered(); track p.id) {
+        <a [routerLink]="['/projects', p.id]" class="project-card">
+
+          <!-- Top : titre + statut -->
+          <div class="project-card__top">
+            <div class="project-card__status-dot" [attr.data-status]="p.status"></div>
+            <h2 class="project-card__title">{{ p.title }}</h2>
+            <span class="chip chip--{{ p.status }}">{{ statusLabel(p.status) }}</span>
+          </div>
+
+          <!-- Description -->
+          @if (p.description) {
+            <p class="project-card__desc">{{ p.description }}</p>
+          }
+
+          <!-- Budget + barre de progression -->
+          @if (p.budget_allocated) {
+            <div class="project-card__budget">
+              <div class="budget-meta">
+                <span class="budget-spent">{{ p.budget_spent | fcfa }}</span>
+                <span class="budget-slash">sur</span>
+                <span class="budget-total">{{ p.budget_allocated | fcfa }}</span>
+                <span class="budget-pct">{{ progressPercent(p) }}%</span>
+              </div>
+              <div class="budget-bar">
+                <div class="budget-bar__fill" [style.width.%]="progressPercent(p)" [attr.data-status]="p.status"></div>
+              </div>
+            </div>
+          } @else {
+            <p class="no-budget">Budget non défini</p>
+          }
+
+          <!-- Footer : créateur + dates -->
+          <div class="project-card__footer">
+            <span class="footer-creator">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              {{ p.creator_name }}
+            </span>
+            @if (p.end_date) {
+              <span class="footer-date">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                {{ formatDate(p.end_date) }}
+              </span>
+            }
+          </div>
+
+        </a>
+      }
+    </div>
+  }
+
+</div>
+
+<app-bottom-nav />
