@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
 import {
   LoginRequest, RegisterRequest, TokenResponse,
-  MeResponse, ApiResponse, ChangePasswordRequest
+  MeResponse, ApiResponse, ChangePasswordRequest, RegisterFromGroupRequest, GroupInviteValidationResponse
 } from '../../shared/models';
 
 const STORAGE_KEYS = {
@@ -46,7 +46,7 @@ export class AuthService {
     );
   }
 
-  // ── REGISTER ──────────────────────────────────────────────────────────────
+  // ── REGISTER (invitation personnelle) ─────────────────────────────────────
 
   register(payload: RegisterRequest): Observable<TokenResponse> {
     return this.http.post<ApiResponse<TokenResponse>>(`${this.base}/register`, payload).pipe(
@@ -54,6 +54,24 @@ export class AuthService {
       tap(tokens => this.storeTokens(tokens)),
       tap(() => this.fetchMe().subscribe()),
     );
+  }
+
+  // ── REGISTER (invitation groupée) ─────────────────────────────────────────
+
+  registerGroup(payload: RegisterFromGroupRequest): Observable<TokenResponse> {
+    return this.http.post<ApiResponse<TokenResponse>>(`${this.base}/register-group`, payload).pipe(
+      map(r => r.data),
+      tap(tokens => this.storeTokens(tokens)),
+      tap(() => this.fetchMe().subscribe()),
+    );
+  }
+
+  // ── VALIDER TOKEN DE GROUPE (public) ──────────────────────────────────────
+
+  validateGroupToken(token: string): Observable<GroupInviteValidationResponse> {
+    return this.http
+      .get<ApiResponse<GroupInviteValidationResponse>>(`${this.base}/group-invite/${token}`)
+      .pipe(map(r => r.data));
   }
 
   // ── LOGOUT ────────────────────────────────────────────────────────────────
@@ -114,8 +132,15 @@ export class AuthService {
     return roles.includes(this.userRole() ?? '');
   }
 
-  getAccessToken(): string | null {
-    return this._accessToken();
+  private isTokenExpired(): boolean {
+    const token = this._accessToken();
+    if (!token) return true;
+    try {
+      const decoded = jwtDecode<{ exp: number }>(token);
+      return decoded.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
   }
 
   private storeTokens(tokens: TokenResponse): void {
@@ -133,18 +158,11 @@ export class AuthService {
   }
 
   private loadUser(): MeResponse | null {
-    const raw = localStorage.getItem(STORAGE_KEYS.USER);
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  private isTokenExpired(): boolean {
-    const token = this._accessToken();
-    if (!token) return true;
     try {
-      const decoded = jwtDecode<{ exp: number }>(token);
-      return decoded.exp * 1000 < Date.now();
+      const raw = localStorage.getItem(STORAGE_KEYS.USER);
+      return raw ? JSON.parse(raw) : null;
     } catch {
-      return true;
+      return null;
     }
   }
 }

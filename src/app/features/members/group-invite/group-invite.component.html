@@ -1,0 +1,276 @@
+<app-navbar />
+
+<div class="page">
+
+  <a routerLink="/members" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Membres
+  </a>
+
+  <!-- ── En-tête avec onglets ─────────────────────────────── -->
+  <div class="form-header">
+    <div class="invite-tabs">
+      <a routerLink="/members/invite" class="invite-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Individuelle
+      </a>
+      <a routerLink="/members/group-invite" class="invite-tab invite-tab--active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Groupée
+      </a>
+    </div>
+    <h1 class="page-title">Invitation groupée</h1>
+    <p class="page-sub">Créez un lien partageable que tout le monde peut utiliser pour s'inscrire.</p>
+  </div>
+
+  <!-- ── Bouton nouveau lien ──────────────────────────────── -->
+  <div class="header-actions">
+    <button class="btn-create" (click)="toggleForm()">
+      @if (showForm()) {
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Annuler
+      } @else {
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Nouveau lien
+      }
+    </button>
+  </div>
+
+  <!-- ── Formulaire de création ───────────────────────────── -->
+  @if (showForm()) {
+    <div class="form-card">
+      <h2 class="form-card__title">Configurer le lien</h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="form">
+
+        <div class="field-group">
+          <label class="field-label">Nom du lien <span class="opt-badge">Optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+            <input class="field-input" type="text" formControlName="label" placeholder="ex: Groupe WhatsApp Mars 2026" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Rôle attribué aux inscrits</label>
+          <div class="role-grid">
+            @for (r of roles; track r.value) {
+              <label class="role-option" [class.role-option--selected]="form.get('default_role')?.value === r.value">
+                <input type="radio" formControlName="default_role" [value]="r.value" />
+                <span class="role-option__name" [attr.data-role]="r.value">{{ r.label }}</span>
+                <span class="role-option__desc">{{ r.desc }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Durée de validité</label>
+          <div class="duration-grid">
+            @for (d of durations; track d.hours) {
+              <label class="duration-option" [class.duration-option--selected]="form.get('expires_in_hours')?.value === d.hours">
+                <input type="radio" formControlName="expires_in_hours" [value]="d.hours" />
+                {{ d.label }}
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Limite d'inscriptions <span class="opt-badge">Optionnel</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <input class="field-input" type="number" formControlName="max_uses" placeholder="Illimité" min="1" />
+          </div>
+          <span class="field-hint">Laissez vide pour ne pas limiter le nombre d'inscriptions.</span>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert-error">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-submit" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> Génération… }
+          @else {
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            Générer le lien
+          }
+        </button>
+
+      </form>
+    </div>
+  }
+
+  <!-- ── Dernier lien créé (succès) ──────────────────────── -->
+  @if (createdInvite() && !showForm()) {
+    <div class="success-banner">
+      <div class="success-banner__icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-banner__body">
+        <p class="success-banner__title">Lien créé avec succès !</p>
+        <p class="success-banner__sub">
+          {{ createdInvite()!.label ?? 'Lien sans nom' }} ·
+          {{ roleLabel(createdInvite()!.default_role) }} ·
+          {{ expiresLabel(createdInvite()!.expires_at) }}
+        </p>
+        <div class="link-row">
+          <span class="link-url">{{ createdInvite()!.invitation_link }}</span>
+          <button class="btn-copy" (click)="copyLink(createdInvite()!)">
+            @if (linkCopied() === createdInvite()!.id) {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Copié !
+            } @else {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copier
+            }
+          </button>
+        </div>
+      </div>
+      <button class="btn-new-link" (click)="newInvite()">+ Nouveau lien</button>
+    </div>
+  }
+
+  <!-- ── Liste des liens ─────────────────────────────────── -->
+  <div class="section">
+    <h2 class="section-title">Liens actifs</h2>
+
+    @if (loadingList()) {
+      <div class="skeleton-list">
+        @for (i of [1,2,3]; track i) { <div class="skeleton-item"></div> }
+      </div>
+    } @else if (invites().length === 0) {
+      <div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <p>Aucun lien d'invitation créé.</p>
+        <button class="btn-create-empty" (click)="showForm.set(true)">Créer le premier lien</button>
+      </div>
+    } @else {
+      <div class="invite-list">
+        @for (invite of invites(); track invite.id) {
+          <div class="invite-card" [class.invite-card--inactive]="!invite.is_active || isExpired(invite.expires_at)">
+
+            <div class="invite-card__status">
+              @if (!invite.is_active) { <span class="badge badge--disabled">Désactivé</span> }
+              @else if (isExpired(invite.expires_at)) { <span class="badge badge--expired">Expiré</span> }
+              @else { <span class="badge badge--active">Actif</span> }
+            </div>
+
+            <div class="invite-card__body">
+              <p class="invite-card__label">{{ invite.label ?? 'Lien sans nom' }}</p>
+              <div class="invite-card__meta">
+                <span class="meta-chip" [attr.data-role]="invite.default_role">{{ roleLabel(invite.default_role) }}</span>
+                <span class="meta-dot">·</span>
+                <span class="meta-text">{{ expiresLabel(invite.expires_at) }}</span>
+                <span class="meta-dot">·</span>
+                <span class="meta-text">{{ invite.use_count }} inscription{{ invite.use_count > 1 ? 's' : '' }}</span>
+                @if (invite.max_uses) { <span class="meta-text">/ {{ invite.max_uses }}</span> }
+              </div>
+              <p class="invite-card__url">{{ invite.invitation_link }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="invite-card__actions">
+              @if (invite.is_active && !isExpired(invite.expires_at)) {
+                <button class="action-btn action-btn--copy" (click)="copyLink(invite)">
+                  @if (linkCopied() === invite.id) {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Copié
+                  } @else {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copier
+                  }
+                </button>
+                <button class="action-btn action-btn--deactivate" (click)="openDeactivateModal(invite)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                  </svg>
+                  Désactiver
+                </button>
+              }
+              <!-- Supprimer : toujours visible -->
+              <button class="action-btn action-btn--delete" (click)="openDeleteModal(invite)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                </svg>
+                Supprimer
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Modal de confirmation ────────────────────────────────────────────── -->
+@if (confirmModal().visible) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <!-- Icône -->
+      <div class="modal__icon" [class.modal__icon--danger]="modalIsDanger" [class.modal__icon--warn]="!modalIsDanger">
+        @if (modalIsDanger) {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        } @else {
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+        }
+      </div>
+
+      <h3 class="modal__title">{{ modalTitle }}</h3>
+      <p class="modal__message">{{ modalMessage }}</p>
+
+      <div class="modal__actions">
+        <button class="btn-modal-cancel" (click)="closeModal()">Annuler</button>
+        <button
+          class="btn-modal-confirm"
+          [class.btn-modal-confirm--danger]="modalIsDanger"
+          [class.btn-modal-confirm--warn]="!modalIsDanger"
+          (click)="confirmAction()"
+        >
+          {{ modalConfirmLabel }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<app-bottom-nav />

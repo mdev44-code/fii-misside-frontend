@@ -237,3 +237,39 @@ export interface ToastMessage {
   message: string;
   duration?: number;
 }
+
+export interface GroupInviteRequest {
+  label?: string;
+  default_role: Role;
+  expires_in_hours: number;
+  max_uses?: number;
+}
+
+export interface GroupInviteResponse {
+  id: string;
+  token: string;
+  label: string | null;
+  default_role: Role;
+  expires_at: string;
+  max_uses: number | null;
+  use_count: number;
+  is_active: boolean;
+  invitation_link: string;
+  created_at: string;
+}
+
+export interface GroupInviteValidationResponse {
+  is_valid: boolean;
+  default_role: Role;
+  label: string | null;
+  expires_at: string;
+  message: string;
+}
+
+export interface RegisterFromGroupRequest {
+  group_token: string;
+  full_name: string;
+  phone_number: string;
+  email?: string;
+  password: string;
+}

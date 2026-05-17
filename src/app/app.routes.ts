@@ -41,6 +41,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/members/invite-member/invite-member.component').then(m => m.InviteMemberComponent),
       },
       {
+        path: 'members/group-invite',
+        canActivate: [roleGuard(['admin'])],
+        loadComponent: () =>
+          import('./features/members/group-invite/group-invite.component').then(m => m.GroupInviteComponent),
+      },
+      {
         path: 'members/:id',
         loadComponent: () => import('./features/members/member-detail/member-detail.component').then(m => m.MemberDetailComponent),
       },

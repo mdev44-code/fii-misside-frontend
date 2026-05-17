@@ -22,7 +22,6 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   padding: calc(3.5rem + 1rem) $mx 5rem;
 }
 
-// Bouton retour
 .back-btn {
   display: inline-flex; align-items: center; gap: 0.375rem;
   font-size: 0.875rem; font-weight: 600; color: $green;
@@ -30,10 +29,10 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   &:hover { text-decoration: underline; }
 }
 
-// ── Wrapper centré du formulaire ──────────────────────────────
+// ── Wrapper centré ────────────────────────────────────────────
 .form-wrap {
-  max-width: 860px;     // largeur max — confortable sur desktop
-  margin: 0 auto;       // centrage horizontal
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .form-header {
@@ -41,18 +40,54 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   text-align: center;
 }
 
+// ── Onglets Individuelle / Groupée ────────────────────────────
+.invite-tabs {
+  display: inline-flex;
+  background: rgba(255,255,255,0.6);
+  border: 1.5px solid $border;
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 1.25rem;
+}
+
+.invite-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $dim;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $green;
+    background: rgba(35, 112, 68, 0.06);
+  }
+
+  &--active {
+    background: $green;
+    color: white;
+    box-shadow: 0 2px 8px rgba(35, 112, 68, 0.25);
+
+    &:hover {
+      background: $green-d;
+      color: white;
+    }
+  }
+}
+
 .form-title {
   font-family: 'Sora', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: $ink;
+  font-size: 1.5rem; font-weight: 800; color: $ink;
   margin-bottom: 0.375rem;
 }
 
 .form-sub {
-  font-size: 0.875rem;
-  color: $dim;
-  line-height: 1.5;
+  font-size: 0.875rem; color: $dim; line-height: 1.5;
 }
 
 // ── Formulaire ────────────────────────────────────────────────
@@ -61,9 +96,7 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   border: 1px solid $border;
   border-radius: 16px;
   padding: 1.75rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  display: flex; flex-direction: column; gap: 1.25rem;
 }
 
 // ── Ligne de 3 champs ─────────────────────────────────────────
@@ -71,34 +104,17 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
-
-  // Tablette → 2 colonnes
-  @media (max-width: 720px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  // Mobile → 1 colonne
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 720px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
 }
 
-// ── Champs individuels ────────────────────────────────────────
 .field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-
-  &.field-group--error .field-input {
-    border-color: $error;
-    background: #fef2f2;
-  }
+  display: flex; flex-direction: column; gap: 0.375rem;
+  &.field-group--error .field-input { border-color: $error; background: #fef2f2; }
 }
 
 .field-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: $ink;
+  font-size: 0.8125rem; font-weight: 600; color: $ink;
 }
 
 .req { color: $error; margin-left: 2px; }
@@ -112,109 +128,53 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
 }
 
 .field-input {
-  width: 100%;
-  height: 46px;
+  width: 100%; height: 46px;
   padding: 0 1rem 0 2.625rem;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.875rem;
-  color: $ink;
+  font-size: 0.875rem; color: $ink;
   background: rgba(255,255,255,0.8);
-  border: 1.5px solid $border;
-  border-radius: 10px;
-  outline: none;
+  border: 1.5px solid $border; border-radius: 10px; outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-
   &::placeholder { color: $dim; }
-
-  &:focus {
-    border-color: $green;
-    box-shadow: 0 0 0 3px rgba(35,112,68,0.10);
-    background: #fff;
-  }
+  &:focus { border-color: $green; box-shadow: 0 0 0 3px rgba(35,112,68,0.10); background: #fff; }
 }
 
-.field-error {
-  font-size: 0.6875rem;
-  color: $error;
-  font-weight: 500;
-}
+.field-error { font-size: 0.6875rem; color: $error; font-weight: 500; }
 
-// ── Grille des rôles — 4 colonnes ────────────────────────────
+// ── Grille des rôles ──────────────────────────────────────────
 .role-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.625rem;
-
-  // Tablette → 2 colonnes
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  // Mobile → 1 colonne
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr 1fr;
-  }
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.625rem;
+  @media (max-width: 720px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr 1fr; }
 }
 
 .role-option {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.875rem 0.875rem 0.75rem;
-  cursor: pointer;
-  background: rgba(255,255,255,0.7);
-  border: 1.5px solid $border;
-  border-radius: 12px;
-  transition: all 0.15s;
-
+  position: relative; display: flex; flex-direction: column;
+  gap: 0.2rem; padding: 0.875rem 0.875rem 0.75rem;
+  cursor: pointer; background: rgba(255,255,255,0.7);
+  border: 1.5px solid $border; border-radius: 12px; transition: all 0.15s;
   input[type="radio"] { display: none; }
-
   &:hover { border-color: rgba(35,112,68,0.3); background: rgba(35,112,68,0.03); }
-
-  &--selected {
-    border-color: $green;
-    background: rgba(35,112,68,0.07);
-  }
+  &--selected { border-color: $green; background: rgba(35,112,68,0.07); }
 }
 
 .role-option__name {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: $ink;
-  display: block;
-  padding-right: 1.5rem; // espace pour la coche
-
+  font-size: 0.875rem; font-weight: 700; color: $ink;
+  display: block; padding-right: 1.5rem;
   &[data-role="admin"]     { color: $green-d; }
   &[data-role="treasurer"] { color: #7a4f00; }
   &[data-role="manager"]   { color: #1e3a8a; }
 }
 
-.role-option__desc {
-  font-size: 0.6875rem;
-  color: $dim;
-  line-height: 1.4;
-}
+.role-option__desc { font-size: 0.6875rem; color: $dim; line-height: 1.4; }
 
 .role-option__check {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  position: absolute; top: 0.75rem; right: 0.75rem;
+  width: 20px; height: 20px; border-radius: 50%;
   border: 1.5px solid $border;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  background: transparent;
-  transition: all 0.15s;
-
-  .role-option--selected & {
-    background: $green;
-    border-color: $green;
-  }
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; background: transparent; transition: all 0.15s;
+  .role-option--selected & { background: $green; border-color: $green; }
 }
 
 // ── Erreur API ────────────────────────────────────────────────
@@ -236,7 +196,6 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   border: none; border-radius: 12px; cursor: pointer;
   box-shadow: 0 4px 14px rgba(35,112,68,0.28);
   transition: background 0.2s, transform 0.15s;
-
   &:hover:not(:disabled) { background: $green-d; transform: translateY(-1px); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
@@ -251,18 +210,13 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
 
 // ── Carte succès ──────────────────────────────────────────────
 .success-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
+  display: flex; justify-content: center; align-items: center; min-height: 60vh;
 }
 
 .success-card {
-  max-width: 480px;
-  width: 100%;
+  max-width: 480px; width: 100%;
   background: rgba(255,255,255,0.6);
-  border: 1px solid $border;
-  border-radius: 16px;
+  border: 1px solid $border; border-radius: 16px;
   padding: 2rem 1.5rem;
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 0.75rem;
@@ -280,11 +234,8 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
 .success-card__msg   { font-size: 0.8125rem; color: $dim; line-height: 1.5; }
 
 .link-box {
-  width: 100%;
-  background: rgba(35,112,68,0.06);
-  border: 1px solid rgba(35,112,68,0.2);
-  border-radius: 10px; padding: 0.875rem;
-  text-align: left;
+  width: 100%; background: rgba(35,112,68,0.06);
+  border: 1px solid rgba(35,112,68,0.2); border-radius: 10px; padding: 0.875rem; text-align: left;
 }
 
 .link-box__label {

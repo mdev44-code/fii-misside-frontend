@@ -43,4 +43,9 @@ export class ApiService {
     return this.http.delete<ApiResponse<T>>(`${this.baseUrl}${path}`)
       .pipe(map(r => r.data));
   }
+
+  deleteVoid(path: string): Observable<void> {
+    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}${path}`)
+      .pipe(map(() => void 0));
+  }
 }

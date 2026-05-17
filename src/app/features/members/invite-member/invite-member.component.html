@@ -46,6 +46,24 @@
     <!-- ── Formulaire centré ───────────────────────────────── -->
     <div class="form-wrap">
       <div class="form-header">
+
+        <!-- ── Onglets Individuelle / Groupée ──────────────── -->
+        <div class="invite-tabs">
+          <a routerLink="/members/invite" class="invite-tab invite-tab--active">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            Individuelle
+          </a>
+          <a routerLink="/members/group-invite" class="invite-tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Groupée
+          </a>
+        </div>
+
         <h1 class="form-title">Inviter un membre</h1>
         <p class="form-sub">Un lien d'invitation sera généré à partager par WhatsApp ou SMS.</p>
       </div>
@@ -77,18 +95,15 @@
               <input class="field-input" type="tel" formControlName="phone_number" placeholder="+221 77 000 00 00" />
             </div>
             @if (isInvalid('phone_number')) {
-              <span class="field-error">Indicatif pays requis (+221…)</span>
+              <span class="field-error">Numéro requis</span>
             }
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              Email <span class="opt">optionnel</span>
-            </label>
+            <label class="field-label">Email <span class="opt">optionnel</span></label>
             <div class="field-wrap">
               <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
               </svg>
               <input class="field-input" type="email" formControlName="email" placeholder="exemple@email.com" />
             </div>
@@ -96,12 +111,15 @@
 
         </div>
 
-        <!-- ── Rôle ───────────────────────────────────────── -->
+        <!-- ── Rôle ─────────────────────────────────────────── -->
         <div class="field-group">
           <label class="field-label">Rôle <span class="req">*</span></label>
           <div class="role-grid">
             @for (r of roles; track r.value) {
-              <label class="role-option" [class.role-option--selected]="form.get('role')?.value === r.value">
+              <label
+                class="role-option"
+                [class.role-option--selected]="form.get('role')?.value === r.value"
+              >
                 <input type="radio" formControlName="role" [value]="r.value" />
                 <span class="role-option__name" [attr.data-role]="r.value">{{ r.label }}</span>
                 <span class="role-option__desc">{{ r.desc }}</span>
