@@ -1,4 +1,4 @@
-<div class="auth-shell">
+<div class="auth-shell" (click)="closeDropdown()">
   <div class="auth-bg">
     <div class="auth-bg__pattern"></div>
     <div class="auth-bg__glow auth-bg__glow--gold"></div>
@@ -6,19 +6,17 @@
 
   <div class="auth-content">
 
-    <!-- ── CAS 1 : Aucun token du tout ──────────────────────────────────── -->
+    <!-- ── CAS 1 : Aucun token ──────────────────────────────────────────── -->
     @if (!inviteMode()) {
       <div class="invite-error" [class.invite-error--visible]="mounted()">
         <span class="invite-error__icon">🔗</span>
         <h2>Lien invalide</h2>
         <p>Ce lien d'invitation est manquant ou a expiré.<br>Demandez un nouveau lien à votre administrateur.</p>
-        <a routerLink="/login" class="btn btn--secondary btn--full mt-md">
-          Retour à la connexion
-        </a>
+        <a routerLink="/login" class="btn btn--secondary btn--full mt-md">Retour à la connexion</a>
       </div>
     }
 
-    <!-- ── CAS 2 : Token de groupe en cours de vérification ─────────────── -->
+    <!-- ── CAS 2 : Token groupe en vérification ─────────────────────────── -->
     @if (inviteMode() === 'group' && validating()) {
       <div class="validating-state" [class.validating-state--visible]="mounted()">
         <div class="validating-spinner"></div>
@@ -26,31 +24,27 @@
       </div>
     }
 
-    <!-- ── CAS 3 : Token de groupe invalide/expiré ───────────────────────── -->
+    <!-- ── CAS 3 : Token groupe invalide ────────────────────────────────── -->
     @if (inviteMode() === 'group' && !validating() && groupTokenError()) {
       <div class="invite-error" [class.invite-error--visible]="mounted()">
         <span class="invite-error__icon">⚠️</span>
         <h2>Lien invalide</h2>
         <p>{{ groupTokenError() }}</p>
-        <a routerLink="/login" class="btn btn--secondary btn--full mt-md">
-          Retour à la connexion
-        </a>
+        <a routerLink="/login" class="btn btn--secondary btn--full mt-md">Retour à la connexion</a>
       </div>
     }
 
-    <!-- ── CAS 4 : Formulaire (personnel ou groupe valide) ───────────────── -->
+    <!-- ── CAS 4 : Formulaire ────────────────────────────────────────────── -->
     @if (
       (inviteMode() === 'personal' && token()) ||
       (inviteMode() === 'group' && !validating() && !groupTokenError() && groupInviteInfo()?.is_valid)
       ) {
 
-      <!-- Header -->
       <header class="auth-header" [class.auth-header--visible]="mounted()">
         <div class="auth-logo auth-logo--image">
           <img ngSrc="assets/images/logo.png" alt="Madina Ka Misside" height="1024" width="1024"/>
         </div>
         <h1 class="auth-title">Rejoindre<br><span class="auth-title--accent">l'association</span></h1>
-
         @if (inviteMode() === 'group' && groupInviteInfo()?.label) {
           <p class="auth-subtitle">{{ groupInviteInfo()?.label }}</p>
         } @else {
@@ -58,38 +52,32 @@
         }
       </header>
 
-      <!-- Card -->
       <div class="auth-card" [class.auth-card--visible]="mounted()">
 
-        <!-- Indicateur d'étapes -->
+        <!-- Indicateur 3 étapes -->
         <div class="steps-indicator">
           <div class="step" [class.step--active]="currentStep() >= 1" [class.step--done]="currentStep() > 1">
             <span class="step__num">1</span>
             <span class="step__label">Identité</span>
           </div>
           <div class="step__line" [class.step__line--done]="currentStep() > 1"></div>
-
-          @if (inviteMode() === 'group') {
-            <div class="step" [class.step--active]="currentStep() >= 2" [class.step--done]="currentStep() > 2">
-              <span class="step__num">2</span>
-              <span class="step__label">Contact</span>
-            </div>
-            <div class="step__line" [class.step__line--done]="currentStep() > 2"></div>
-          }
-
-          <div class="step" [class.step--active]="currentStep() >= totalSteps()">
-            <span class="step__num">{{ totalSteps() }}</span>
+          <div class="step" [class.step--active]="currentStep() >= 2" [class.step--done]="currentStep() > 2">
+            <span class="step__num">2</span>
+            <span class="step__label">Contact</span>
+          </div>
+          <div class="step__line" [class.step__line--done]="currentStep() > 2"></div>
+          <div class="step" [class.step--active]="currentStep() >= 3">
+            <span class="step__num">3</span>
             <span class="step__label">Sécurité</span>
           </div>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-          <!-- ────────────────────────────────────────────────────────────── -->
-          <!-- ÉTAPE 1 : Nom complet (commun aux 2 modes)                     -->
-          <!-- ────────────────────────────────────────────────────────────── -->
+          <!-- ── ÉTAPE 1 : Nom complet ──────────────────────────────────── -->
           @if (currentStep() === 1) {
             <div class="step-panel step-panel--enter">
+
               <div class="form-group">
                 <label class="form-label" for="full_name">Votre nom complet</label>
                 <div class="input-wrap">
@@ -97,8 +85,7 @@
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
                   <input
-                    id="full_name"
-                    type="text"
+                    id="full_name" type="text"
                     class="form-input input--with-icon"
                     [class.is-invalid]="isInvalid('full_name')"
                     formControlName="full_name"
@@ -117,66 +104,95 @@
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </button>
+
             </div>
           }
 
-          <!-- ────────────────────────────────────────────────────────────── -->
-          <!-- ÉTAPE 2 (groupe uniquement) : Téléphone + Email               -->
-          <!-- ────────────────────────────────────────────────────────────── -->
-          @if (currentStep() === 2 && inviteMode() === 'group') {
+          <!-- ── ÉTAPE 2 : Téléphone + Email ────────────────────────────── -->
+          @if (currentStep() === 2) {
             <div class="step-panel step-panel--enter">
 
-              <div class="form-group">
+              <!-- Téléphone avec sélecteur pays -->
+              <div class="form-group" [class.form-group--error]="isInvalid('phone_number')">
                 <label class="form-label" for="phone_number">
                   Numéro de téléphone <span class="req">*</span>
                 </label>
-                <div class="input-wrap">
-                  <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.47 2 2 0 0 1 3.56 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6.29 6.29l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
+                <div class="phone-wrap" [class.phone-wrap--invalid]="isInvalid('phone_number')">
+
+                  <!-- Sélecteur indicatif -->
+                  <div class="country-selector" (click)="toggleCountryDropdown($event)">
+                    <span class="country-selector__flag">{{ selectedCountry().flag }}</span>
+                    <span class="country-selector__code">{{ selectedCountry().code }}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="country-selector__arrow">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+
+                    @if (showCountryDropdown()) {
+                      <div class="country-dropdown" (click)="$event.stopPropagation()">
+                        @for (country of countries; track country.iso) {
+                          <button
+                            type="button"
+                            class="country-option"
+                            [class.country-option--active]="selectedCountry().iso === country.iso"
+                            (click)="selectCountry(country)"
+                          >
+                            <span class="country-option__flag">{{ country.flag }}</span>
+                            <span class="country-option__name">{{ country.name }}</span>
+                            <span class="country-option__code">{{ country.code }}</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Numéro local -->
                   <input
-                    id="phone_number"
-                    type="tel"
-                    class="form-input input--with-icon"
+                    id="phone_number" type="tel"
+                    class="form-input phone-input"
                     [class.is-invalid]="isInvalid('phone_number')"
                     formControlName="phone_number"
-                    placeholder="+221 77 000 00 00"
-                    autocomplete="tel"
+                    [placeholder]="phonePlaceholder"
+                    autocomplete="tel-national"
                   />
                 </div>
                 @if (isInvalid('phone_number')) {
-                  <span class="form-error">Numéro de téléphone requis</span>
+                  <span class="form-error">{{ getPhoneError() }}</span>
+                } @else {
+                  <span class="form-hint">Le numéro sera enregistré comme {{ selectedCountry().code }} + votre saisie</span>
                 }
               </div>
 
+              <!-- Email (optionnel) -->
               <div class="form-group">
                 <label class="form-label" for="email">
-                  Adresse email
-                  <span class="opt-badge">Optionnel</span>
+                  Adresse email <span class="opt-badge">Optionnel</span>
                 </label>
                 <div class="input-wrap">
                   <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                   </svg>
                   <input
-                    id="email"
-                    type="email"
+                    id="email" type="email"
                     class="form-input input--with-icon"
+                    [class.is-invalid]="isInvalid('email')"
                     formControlName="email"
                     placeholder="mamadou@example.com"
                     autocomplete="email"
                   />
                 </div>
+                @if (isInvalid('email')) {
+                  <span class="form-error">{{ getEmailError() }}</span>
+                }
               </div>
 
               <div class="step-nav">
-                <button type="button" class="btn btn--ghost" (click)="goBack()">
+                <button type="button" class="btn btn--ghost btn--nav" (click)="goBack()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M19 12H5M12 5l-7 7 7 7"/>
                   </svg>
                   Retour
                 </button>
-                <button type="button" class="btn btn--primary btn--flex" (click)="goToStep3()">
+                <button type="button" class="btn btn--primary btn--nav" (click)="goToStep3()">
                   Continuer
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -187,10 +203,8 @@
             </div>
           }
 
-          <!-- ────────────────────────────────────────────────────────────── -->
-          <!-- ÉTAPE FINALE : Mot de passe (étape 2 ou 3 selon le mode)      -->
-          <!-- ────────────────────────────────────────────────────────────── -->
-          @if (currentStep() === totalSteps()) {
+          <!-- ── ÉTAPE 3 : Mot de passe ──────────────────────────────────── -->
+          @if (currentStep() === 3) {
             <div class="step-panel step-panel--enter">
 
               <!-- Mot de passe -->
@@ -198,7 +212,7 @@
                 <label class="form-label" for="password">Choisissez un mot de passe</label>
                 <div class="input-wrap">
                   <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                   <input
                     id="password"
@@ -206,13 +220,16 @@
                     class="form-input input--with-icon input--with-toggle"
                     [class.is-invalid]="isInvalid('password')"
                     formControlName="password"
-                    placeholder="••••••••"
+                    placeholder="Minimum 8 caractères"
                     autocomplete="new-password"
                   />
-                  <button type="button" class="input-toggle" (click)="showPassword.set(!showPassword())">
+                  <!-- Toggle œil — positionné en absolu DANS input-wrap -->
+                  <button type="button" class="input-toggle" (click)="showPassword.set(!showPassword())" tabindex="-1">
                     @if (showPassword()) {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
                       </svg>
                     } @else {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -222,9 +239,8 @@
                   </button>
                 </div>
                 @if (isInvalid('password')) {
-                  <span class="form-error">Minimum 8 caractères</span>
+                  <span class="form-error">Minimum 8 caractères requis</span>
                 }
-                <!-- Jauge de force -->
                 @if (form.get('password')?.value) {
                   <div class="strength-bar">
                     <div class="strength-bar__track">
@@ -241,7 +257,7 @@
                 }
               </div>
 
-              <!-- Confirmation -->
+              <!-- Confirmation mot de passe -->
               <div class="form-group">
                 <label class="form-label" for="confirmPassword">Confirmez le mot de passe</label>
                 <div class="input-wrap">
@@ -263,23 +279,25 @@
                 }
               </div>
 
+              <!-- Message d'erreur API — générique, ne révèle rien -->
               @if (errorMessage()) {
                 <div class="auth-error">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
-                  {{ errorMessage() }}
+                  Impossible de créer le compte. Vérifiez vos informations.
                 </div>
               }
 
+              <!-- Boutons navigation — même taille, centrés -->
               <div class="step-nav">
-                <button type="button" class="btn btn--ghost" (click)="goBack()">
+                <button type="button" class="btn btn--ghost btn--nav" (click)="goBack()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M19 12H5M12 5l-7 7 7 7"/>
                   </svg>
                   Retour
                 </button>
-                <button type="submit" class="btn btn--primary btn--flex auth-submit" [disabled]="loading()">
+                <button type="submit" class="btn btn--primary btn--nav" [disabled]="loading()">
                   @if (loading()) {
                     <span class="loading-spinner"></span>
                     Création…
@@ -301,5 +319,6 @@
       </p>
 
     }
+
   </div>
 </div>

@@ -21,16 +21,15 @@ export class InviteMemberComponent {
   private router = inject(Router);
   private toast  = inject(ToastService);
 
-  loading       = signal(false);
-  errorMessage  = signal('');
-  inviteResult  = signal<InviteMemberResponse | null>(null);
-  linkCopied    = signal(false);
+  loading      = signal(false);
+  errorMessage = signal('');
+  inviteResult = signal<InviteMemberResponse | null>(null);
+  linkCopied   = signal(false);
 
+  // ── Formulaire individuel v2 — rôle uniquement ────────────
+  // Le membre renseignera lui-même ses informations via le lien
   form = this.fb.nonNullable.group({
-    full_name:    ['', [Validators.required, Validators.minLength(2)]],
-    phone_number: ['', [Validators.required]],
-    email:        [''],
-    role:         ['member', Validators.required],
+    role: ['member', Validators.required],
   });
 
   roles = [
@@ -40,26 +39,19 @@ export class InviteMemberComponent {
     { value: 'admin',     label: 'Administrateur', desc: 'Accès complet' },
   ];
 
-  isInvalid(field: string): boolean {
-    const ctrl = this.form.get(field);
-    return !!(ctrl?.invalid && ctrl?.touched);
-  }
-
   onSubmit() {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.loading.set(true);
     this.errorMessage.set('');
 
-    const { full_name, phone_number, email, role } = this.form.getRawValue();
-    const body: Record<string, string> = { full_name, phone_number, role };
-    if (email.trim()) body['email'] = email.trim();
+    const { role } = this.form.getRawValue();
 
-    this.api.post<InviteMemberResponse>('/members/invite', body).subscribe({
+    this.api.post<InviteMemberResponse>('/members/invite', { role }).subscribe({
       next: (res) => {
         this.inviteResult.set(res);
         this.loading.set(false);
-        this.toast.success(`Invitation créée pour ${full_name}`);
+        this.toast.success('Lien d\'invitation généré');
       },
       error: (err) => {
         this.errorMessage.set(err?.error?.message ?? 'Une erreur est survenue.');

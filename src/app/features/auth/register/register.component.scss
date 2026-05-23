@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sora:wght@600;700;800&display=swap');
 
 // ── Variables ──────────────────────────────────────────────────────────────
 $green:   #1B6E4C;
@@ -77,7 +77,7 @@ $error:   #DC2626;
 }
 
 .auth-subtitle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9375rem; color: $dim;
 }
 
@@ -148,7 +148,7 @@ $error:   #DC2626;
 .form-group { display: flex; flex-direction: column; gap: 0.375rem; }
 
 .form-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8125rem; font-weight: 600; color: $ink;
   display: flex; align-items: center; gap: 0.375rem;
 }
@@ -170,7 +170,7 @@ $error:   #DC2626;
 
 .form-input {
   width: 100%; height: 48px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9375rem; color: $ink;
   background: #F7F8FA;
   border: 1.5px solid #e5e7eb;
@@ -195,11 +195,31 @@ $error:   #DC2626;
   }
 }
 
+.input-wrap {
+  position: relative;  // obligatoire pour que le toggle soit ancré au champ
+}
+
 .input-toggle {
-  position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
-  background: none; border: none; padding: 0; cursor: pointer;
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
   color: #9ca3af;
-  &:hover { color: $ink; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+
+  &:hover { color: #374151; }
+  &:focus { outline: none; }
+}
+
+.input--with-toggle {
+  padding-right: 2.75rem !important;
 }
 
 .form-error {
@@ -231,14 +251,26 @@ $error:   #DC2626;
 
 // ── Navigation entre étapes ────────────────────────────────────────────────
 .step-nav {
-  display: flex; gap: 0.75rem; align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;   // même hauteur
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+// Les deux boutons "Retour" et "Continuer/Créer" ont la même taille
+.btn--nav {
+  flex: 1;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
 }
 
 // ── Boutons ────────────────────────────────────────────────────────────────
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 0.5rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9375rem; font-weight: 600;
   padding: 0.75rem 1.25rem;
   border-radius: 10px; border: none; cursor: pointer;
@@ -286,17 +318,28 @@ $error:   #DC2626;
 
 // ── Erreur API ─────────────────────────────────────────────────────────────
 .auth-error {
-  display: flex; align-items: center; gap: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #fef2f2; border: 1px solid #fecaca;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 10px;
-  color: $error; font-size: 0.875rem;
-  font-family: 'DM Sans', sans-serif;
+  color: #dc2626;          // rouge
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: #dc2626;
+  }
 }
 
 // ── Footer ─────────────────────────────────────────────────────────────────
 .auth-footer {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.875rem; color: $dim; text-align: center;
   opacity: 0; transition: opacity 0.4s ease 0.3s;
   &--visible { opacity: 1; }
@@ -327,7 +370,7 @@ $error:   #DC2626;
   opacity: 0; transition: opacity 0.3s ease;
   display: flex; flex-direction: column; align-items: center; gap: 1rem;
   &--visible { opacity: 1; }
-  p { font-family: 'DM Sans', sans-serif; font-size: 0.9375rem; }
+  p { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9375rem; }
 }
 .validating-spinner {
   width: 36px; height: 36px; border-radius: 50%;
@@ -337,3 +380,153 @@ $error:   #DC2626;
 }
 
 .mt-md { margin-top: 1rem; }
+
+// ── 4. Responsive ─────────────────────────────────────────────────────────
+
+// Mobile étroit (< 400px) : réduire les paddings de la card
+@media (max-width: 400px) {
+  .auth-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .auth-title {
+    font-size: 1.625rem;
+  }
+
+  .steps-indicator {
+    margin-bottom: 1.25rem;
+  }
+
+  .step__label {
+    font-size: 0.5625rem;
+  }
+
+  .form-input {
+    height: 46px;
+    font-size: 0.875rem;
+  }
+
+  // Sur mobile : boutons empilés verticalement
+  .step-nav {
+    flex-direction: column-reverse;  // "Créer" en haut, "Retour" en bas
+    gap: 0.5rem;
+  }
+
+  .btn--nav {
+    flex: none;
+    width: 100%;
+  }
+}
+
+// Très petits écrans (< 360px)
+@media (max-width: 360px) {
+  .auth-card {
+    padding: 1rem 0.875rem;
+  }
+
+  .btn--nav {
+    font-size: 0.875rem;
+    padding: 0.6875rem 0.875rem;
+  }
+}
+
+
+// ── 5. Sélecteur pays responsive ──────────────────────────────────────────
+
+.phone-wrap {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: visible;
+  background: #F7F8FA;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: #1b6e4c;
+    box-shadow: 0 0 0 3px rgba(27, 110, 76, 0.1);
+    background: white;
+  }
+
+  &--invalid {
+    border-color: #dc2626;
+    background: #fef2f2;
+  }
+}
+
+.country-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px 0 12px;
+  cursor: pointer;
+  border-right: 1.5px solid #e5e7eb;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px 0 0 8px;
+  user-select: none;
+  min-width: 88px;
+  flex-shrink: 0;
+
+  &:hover { background: rgba(27, 110, 76, 0.04); }
+}
+
+.country-selector__flag  { font-size: 1.125rem; line-height: 1; }
+.country-selector__code  { font-size: 0.8125rem; font-weight: 600; color: #374151; white-space: nowrap; }
+.country-selector__arrow { color: #9ca3af; flex-shrink: 0; }
+
+.country-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -1px;
+  z-index: 100;
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  min-width: 190px;
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(27, 110, 76, 0.06); }
+  &--active { background: rgba(27, 110, 76, 0.10); }
+}
+
+.country-option__flag { font-size: 1.125rem; }
+.country-option__name { font-size: 0.875rem; font-weight: 500; color: #111827; flex: 1; }
+.country-option__code { font-size: 0.8125rem; color: #6b7280; }
+
+.phone-input {
+  flex: 1;
+  height: 46px;
+  padding: 0 1rem;
+  font-size: 0.9375rem;
+  color: #111827;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-radius: 0 8px 8px 0;
+  min-width: 0;   // important pour que flex: 1 fonctionne sur mobile
+
+  &::placeholder { color: #9ca3af; }
+  &.is-invalid { background: transparent; }
+}
+
+.form-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-top: 2px;
+}

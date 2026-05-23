@@ -63,20 +63,17 @@ export interface Member {
   role: Role;
   status: MemberStatus;
   profile_picture_url: string | null;
-  joined_at: string;
+  joined_at: string | null;
+  created_at: string;
 }
 
 export type MeResponse = Member;
 
 export interface InviteMemberRequest {
-  full_name: string;
-  phone_number: string;
-  email?: string;
   role: Role;
 }
 
 export interface InviteMemberResponse {
-  member: Member;
   invitation_link: string;
   message: string;
 }

@@ -20,7 +20,6 @@
           </svg>
         </div>
         <h2 class="success-card__title">Invitation créée !</h2>
-        <p class="success-card__name">{{ inviteResult()!.member.full_name }}</p>
         <p class="success-card__msg">{{ inviteResult()!.message }}</p>
         <div class="link-box">
           <p class="link-box__label">Lien d'invitation</p>
@@ -65,51 +64,10 @@
         </div>
 
         <h1 class="form-title">Inviter un membre</h1>
-        <p class="form-sub">Un lien d'invitation sera généré à partager par WhatsApp ou SMS.</p>
+        <p class="form-sub">Choisissez le rôle — le membre renseignera lui-même ses informations en cliquant sur le lien. Le lien n'est utilisable qu'<strong>une seule fois</strong>.</p>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="form">
-
-        <!-- ── Ligne 1 : Nom · Téléphone · Email ───────────── -->
-        <div class="fields-row">
-
-          <div class="field-group" [class.field-group--error]="isInvalid('full_name')">
-            <label class="field-label">Nom complet <span class="req">*</span></label>
-            <div class="field-wrap">
-              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-              <input class="field-input" type="text" formControlName="full_name" placeholder="Mamadou Diallo" />
-            </div>
-            @if (isInvalid('full_name')) {
-              <span class="field-error">Minimum 2 caractères</span>
-            }
-          </div>
-
-          <div class="field-group" [class.field-group--error]="isInvalid('phone_number')">
-            <label class="field-label">Téléphone <span class="req">*</span></label>
-            <div class="field-wrap">
-              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.47 2 2 0 0 1 3.56 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6.29 6.29l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-              <input class="field-input" type="tel" formControlName="phone_number" placeholder="+221 77 000 00 00" />
-            </div>
-            @if (isInvalid('phone_number')) {
-              <span class="field-error">Numéro requis</span>
-            }
-          </div>
-
-          <div class="field-group">
-            <label class="field-label">Email <span class="opt">optionnel</span></label>
-            <div class="field-wrap">
-              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-              </svg>
-              <input class="field-input" type="email" formControlName="email" placeholder="exemple@email.com" />
-            </div>
-          </div>
-
-        </div>
 
         <!-- ── Rôle ─────────────────────────────────────────── -->
         <div class="field-group">

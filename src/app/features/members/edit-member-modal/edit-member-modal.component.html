@@ -1,0 +1,76 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal">
+
+    <!-- Header -->
+    <div class="modal__header">
+      <h2 class="modal__title">Modifier le membre</h2>
+      <button class="modal__close" (click)="close()" aria-label="Fermer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Identité -->
+    <div class="modal__identity">
+      <div class="identity-avatar" [attr.data-role]="member.role">
+        {{ initials(member.full_name) }}
+      </div>
+      <div>
+        <p class="identity-name">{{ member.full_name }}</p>
+        <p class="identity-phone">{{ member.phone_number }}</p>
+      </div>
+    </div>
+
+    <!-- Rôle -->
+    <div class="modal__section">
+      <label class="section-label">Rôle</label>
+      <div class="role-grid">
+        @for (r of roles; track r.value) {
+          <button
+            class="role-btn"
+            [class.role-btn--active]="selectedRole() === r.value"
+            [attr.data-role]="r.value"
+            (click)="selectedRole.set(r.value)">
+            {{ r.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Statut -->
+    <div class="modal__section">
+      <label class="section-label">Statut</label>
+      <div class="status-grid">
+        @for (s of statuses; track s.value) {
+          <button
+            class="status-btn"
+            [class.status-btn--active]="selectedStatus() === s.value"
+            [attr.data-status]="s.value"
+            (click)="selectedStatus.set(s.value)">
+            <span class="status-dot" [attr.data-status]="s.value"></span>
+            {{ s.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal__footer">
+      <button class="btn-cancel" (click)="close()" [disabled]="saving()">Annuler</button>
+      <button
+        class="btn-save"
+        (click)="save()"
+        [disabled]="!hasChanges || saving()">
+        @if (saving()) {
+          <span class="spinner"></span>
+          Enregistrement…
+        } @else {
+          Enregistrer
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

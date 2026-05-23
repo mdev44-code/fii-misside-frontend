@@ -10,59 +10,254 @@
   </a>
 
   <div class="page__header">
-    <h1 class="page__title">Organigramme</h1>
-    @if (!loading()) {
-      <p class="page__sub">{{ totalMembers() }} membres au total</p>
+    <div class="page__header-left">
+      <h1 class="page__title">Organigramme</h1>
+      @if (!loading() && data()) {
+        <p class="page__sub">
+          {{ total() }} poste(s) · {{ occupied() }} occupé(s) · {{ vacant() }} vacant(s)
+        </p>
+      }
+    </div>
+    @if (auth.isAdmin()) {
+      <button class="btn-add" (click)="openCreate()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span class="btn-add__text">Nouveau</span>
+      </button>
     }
   </div>
 
+  <!-- ── Loading ──────────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="loading-groups">
-      @for (i of [1,2,3,4]; track i) {
-        <div class="skel skel--group"></div>
+    <div class="loading-list">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skel skel--row"></div>
       }
     </div>
-
-  } @else if (!orgChart()) {
+  }
+  @else if (!data()) {
     <div class="empty">
       <p>Impossible de charger l'organigramme.</p>
     </div>
+  }
+  @else if (postes().length === 0) {
+    <div class="empty">
+      <div class="empty__icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <p class="empty__text">Aucun poste créé pour l'instant.</p>
+      @if (auth.isAdmin()) {
+        <button class="btn-empty" (click)="openCreate()">Créer le premier poste</button>
+      }
+    </div>
+  }
+  @else {
+    <div class="postes-list">
+      @for (poste of postes(); track poste.id) {
+        <div class="poste-card" [class.poste-card--vacant]="poste.is_vacant">
 
-  } @else {
-    <div class="org">
-      @for (group of groups; track group.key) {
-        @if (getMembers(group.key).length > 0) {
-          <div class="group">
-            <!-- En-tête groupe -->
-            <div class="group__header">
-              <div class="group__dot" [attr.data-role]="group.role"></div>
-              <span class="group__label">{{ group.label }}</span>
-              <span class="group__count">{{ getMembers(group.key).length }}</span>
-            </div>
-
-            <!-- Membres du groupe -->
-            <div class="group__members">
-              @for (member of getMembers(group.key); track member.id) {
-                <a [routerLink]="['/members', member.id]" class="member-row">
-                  <div class="member-row__avatar" [attr.data-role]="group.role">
-                    {{ initials(member.full_name) }}
-                  </div>
-                  <div class="member-row__info">
-                    <p class="member-row__name">{{ member.full_name }}</p>
-                    <p class="member-row__phone">{{ member.phone_number }}</p>
-                  </div>
-                  <svg class="member-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
-                </a>
-              }
-            </div>
+          <!-- En-tête : titre + badge -->
+          <div class="poste-card__header">
+            <h3 class="poste-card__title">{{ poste.title }}</h3>
+            <span class="badge" [class.badge--vacant]="poste.is_vacant" [class.badge--occupied]="!poste.is_vacant">
+              {{ poste.is_vacant ? 'Vacant' : 'Occupé' }}
+            </span>
           </div>
-        }
+
+          <!-- Membre assigné OU état vacant -->
+          @if (poste.member) {
+            <a [routerLink]="['/members', poste.member.id]" class="poste-card__member">
+              <div class="avatar">
+                {{ initials(poste.member.full_name) }}
+              </div>
+              <div class="poste-card__info">
+                <p class="poste-card__name">{{ poste.member.full_name }}</p>
+                <p class="poste-card__phone">{{ poste.member.phone_number }}</p>
+              </div>
+              <svg class="poste-card__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          } @else {
+            <div class="poste-card__vacant">
+              <div class="avatar avatar--empty">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <p class="poste-card__vacant-text">Poste non attribué</p>
+            </div>
+          }
+
+          <!-- Actions admin -->
+          @if (auth.isAdmin()) {
+            <div class="poste-card__actions">
+              <button class="action-btn action-btn--assign" (click)="openAssign(poste)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                {{ poste.is_vacant ? 'Attribuer' : 'Changer' }}
+              </button>
+              <button class="action-btn action-btn--delete" (click)="openDelete(poste)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
       }
     </div>
   }
 
 </div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODALE — Créer un poste
+     ══════════════════════════════════════════════════════════════ -->
+@if (showCreateModal()) {
+  <div class="overlay" (click)="closeCreate()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2 class="modal__title">Nouveau poste</h2>
+      <p class="modal__sub">Ajoutez un poste à l'organigramme de l'association.</p>
+
+      <label class="field">
+        <span class="field__label">Titre du poste</span>
+        <input
+          class="field__input"
+          type="text"
+          placeholder="Ex : Président, Secrétaire Général…"
+          [ngModel]="newTitle()"
+          (ngModelChange)="newTitle.set($event)"
+          maxlength="100"
+        />
+      </label>
+
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="closeCreate()" [disabled]="actionLoading()">Annuler</button>
+        <button class="btn btn--primary" (click)="submitCreate()" [disabled]="actionLoading() || newTitle().trim().length < 2">
+          {{ actionLoading() ? 'Création…' : 'Créer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODALE — Attribuer un poste
+     ══════════════════════════════════════════════════════════════ -->
+@if (showAssignModal() && selectedPoste()) {
+  <div class="overlay" (click)="closeAssign()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2 class="modal__title">{{ selectedPoste()!.is_vacant ? 'Attribuer' : 'Modifier' }} — {{ selectedPoste()!.title }}</h2>
+      <p class="modal__sub">
+        {{ selectedPoste()!.is_vacant
+        ? 'Sélectionnez le membre qui occupera ce poste.'
+        : 'Changez le titulaire ou libérez le poste.' }}
+      </p>
+
+      <div class="field">
+        <span class="field__label">Membre</span>
+        <div class="dropdown" [class.dropdown--open]="dropdownOpen()">
+          <button class="dropdown__trigger" type="button" (click)="toggleDropdown()">
+            <span class="dropdown__value" [class.dropdown__value--placeholder]="!selectedMemberId()">
+              {{ selectedMemberLabel() }}
+            </span>
+            <svg class="dropdown__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          @if (dropdownOpen()) {
+            <div class="dropdown__panel">
+              <!-- Option : libérer -->
+              <button
+                class="dropdown__option"
+                [class.dropdown__option--active]="!selectedMemberId()"
+                (click)="selectMember('')"
+              >
+                <div class="dropdown__option-avatar dropdown__option-avatar--empty">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </div>
+                <span class="dropdown__option-text">Aucun (libérer le poste)</span>
+              </button>
+
+              <!-- Options : membres disponibles -->
+              @for (m of availableMembers(); track m.id) {
+                <button
+                  class="dropdown__option"
+                  [class.dropdown__option--active]="selectedMemberId() === m.id"
+                  (click)="selectMember(m.id)"
+                >
+                  <div class="dropdown__option-avatar">
+                    {{ initials(m.full_name) }}
+                  </div>
+                  <div class="dropdown__option-info">
+                    <span class="dropdown__option-name">{{ m.full_name }}</span>
+                    <span class="dropdown__option-phone">{{ m.phone_number }}</span>
+                  </div>
+                  @if (selectedMemberId() === m.id) {
+                    <svg class="dropdown__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  }
+                </button>
+              }
+
+              @if (availableMembers().length === 0) {
+                <div class="dropdown__empty">Aucun membre disponible</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="closeAssign()" [disabled]="actionLoading()">Annuler</button>
+        <button class="btn btn--primary" (click)="submitAssign()" [disabled]="actionLoading()">
+          {{ actionLoading() ? 'Enregistrement…' : (selectedMemberId() ? 'Attribuer' : 'Libérer') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODALE — Confirmer suppression
+     ══════════════════════════════════════════════════════════════ -->
+@if (showDeleteModal() && posteToDelete()) {
+  <div class="overlay" (click)="closeDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2 class="modal__title modal__title--danger">Supprimer le poste</h2>
+      <p class="modal__sub">
+        Êtes-vous sûr de vouloir supprimer le poste <strong>{{ posteToDelete()!.title }}</strong> ?
+        @if (posteToDelete()!.member) {
+          <br/>{{ posteToDelete()!.member!.full_name }} perdra son poste mais restera membre.
+        }
+      </p>
+
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="closeDelete()" [disabled]="actionLoading()">Annuler</button>
+        <button class="btn btn--danger" (click)="confirmDelete()" [disabled]="actionLoading()">
+          {{ actionLoading() ? 'Suppression…' : 'Supprimer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 <app-bottom-nav />

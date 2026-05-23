@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+$green:    rgb(35, 112, 68);
+$green-d:  rgb(22, 78, 47);
+$green-xl: rgba(35, 112, 68, 0.10);
+$cream:    rgb(245, 240, 232);
+$ink:      #0d1a10;
+$dim:      #6b7d6f;
+$border:   rgba(35, 112, 68, 0.13);
+
+// ── Backdrop ──────────────────────────────────────────────────
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(13, 26, 16, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end; justify-content: center;
+
+  @media (min-width: 640px) { align-items: center; }
+}
+
+// ── Modal ─────────────────────────────────────────────────────
+.modal {
+  width: 100%; max-width: 480px;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  padding: 1.375rem 1.375rem 2.25rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (min-width: 640px) {
+    border-radius: 20px;
+    padding: 1.5rem;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+// ── Header ────────────────────────────────────────────────────
+.modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.modal__title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.0625rem; font-weight: 800; color: $ink;
+}
+
+.modal__close {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: rgba(13,26,16,0.07);
+  color: $dim; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  &:hover { background: rgba(13,26,16,0.12); }
+}
+
+// ── Identité ──────────────────────────────────────────────────
+.modal__identity {
+  display: flex; align-items: center; gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: $cream;
+  border-radius: 12px;
+  margin-bottom: 1.375rem;
+}
+
+.identity-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.875rem; font-weight: 800;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+
+  &[data-role="admin"]     { background: rgba(35,112,68,0.12);   color: $green-d; border-color: rgba(35,112,68,0.2); }
+  &[data-role="treasurer"] { background: rgba(180,120,0,0.10);   color: #7a4f00;  border-color: rgba(180,120,0,0.2); }
+  &[data-role="manager"]   { background: rgba(30,90,180,0.10);   color: #1e3a8a;  border-color: rgba(30,90,180,0.2); }
+  &[data-role="member"]    { background: rgba(107,125,111,0.12); color: $dim;     border-color: rgba(107,125,111,0.2); }
+}
+
+.identity-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9375rem; font-weight: 700; color: $ink;
+}
+
+.identity-phone {
+  font-size: 0.8125rem; font-weight: 500; color: $dim; margin-top: 1px;
+}
+
+// ── Sections ──────────────────────────────────────────────────
+.modal__section { margin-bottom: 1.25rem; }
+
+.section-label {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.6875rem; font-weight: 700;
+  color: $dim; text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 0.625rem;
+}
+
+// ── Grille rôles ──────────────────────────────────────────────
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.role-btn {
+  padding: 0.625rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8125rem; font-weight: 600; color: $dim;
+  background: rgba(255,255,255,0.65);
+  cursor: pointer; text-align: center;
+  transition: all 0.15s;
+
+  &:hover:not(.role-btn--active) {
+    border-color: rgba(35,112,68,0.3);
+    color: $green;
+    background: $green-xl;
+  }
+
+  // Actif : fond vert uni, texte blanc — comme les badges member-list
+  &--active {
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+
+    &[data-role="admin"]     { background: $green; }
+    &[data-role="treasurer"] { background: #a06000; }
+    &[data-role="manager"]   { background: #1e3a8a; }
+    &[data-role="member"]    { background: #4a5a4e; }
+  }
+}
+
+// ── Statuts ───────────────────────────────────────────────────
+.status-grid {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+
+.status-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.875rem;
+  border: 1.5px solid $border;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8125rem; font-weight: 600; color: $dim;
+  background: rgba(255,255,255,0.65);
+  cursor: pointer; transition: all 0.15s;
+
+  &:hover:not(.status-btn--active) {
+    border-color: rgba(35,112,68,0.3);
+    color: $ink;
+  }
+
+  &--active {
+    &[data-status="active"]    { background: rgba(35,112,68,0.12);   border-color: rgba(35,112,68,0.25);   color: $green-d; }
+    &[data-status="inactive"]  { background: rgba(107,125,111,0.12); border-color: rgba(107,125,111,0.25); color: #4a5a4e; }
+    &[data-status="suspended"] { background: rgba(185,28,28,0.10);   border-color: rgba(185,28,28,0.25);   color: #991b1b; }
+  }
+}
+
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  &[data-status="active"]    { background: $green; }
+  &[data-status="inactive"]  { background: #6b7d6f; }
+  &[data-status="suspended"] { background: #b91c1c; }
+}
+
+// ── Footer ────────────────────────────────────────────────────
+.modal__footer {
+  display: flex; gap: 0.625rem; margin-top: 1.75rem;
+}
+
+.btn-cancel {
+  flex: 1; padding: 0.75rem;
+  border: 1.5px solid $border; border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem; font-weight: 600; color: $dim;
+  background: transparent; cursor: pointer; transition: background 0.15s;
+  &:hover:not(:disabled) { background: rgba(0,0,0,0.04); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-save {
+  flex: 2; padding: 0.75rem;
+  border: none; border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem; font-weight: 700; color: #fff;
+  background: $green; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  transition: background 0.15s;
+  &:hover:not(:disabled) { background: $green-d; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.spinner {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
