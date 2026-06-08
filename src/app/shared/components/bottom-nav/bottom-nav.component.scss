@@ -87,22 +87,41 @@
 
 // ── Responsive ─────────────────────────────────────────────────────────────
 
-// Mobile : ≤ 767px — forme pill flottante
+// Mobile : ≤ 767px — pilule flottante centrée
 @media (max-width: 767px) {
   .bottom-nav {
-    left: 1.125rem;
-    right: 1.125rem;
+    // Pilule centrée, détachée des bords (effet flottant)
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 420px;
     bottom: calc(1.125rem + env(safe-area-inset-bottom, 0px));
-    border-radius: 44px;
-    border-top: none;
+    border-radius: 999px;
+    border: 1px solid rgba(26, 92, 53, 0.10);
     padding-bottom: 0;
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.13),
-      0 2px 8px rgba(0, 0, 0, 0.07);
+      0 10px 30px rgba(13, 26, 16, 0.16),
+      0 2px 6px rgba(13, 26, 16, 0.08);
   }
 
   .bottom-nav__inner {
     max-width: 100%;
-    padding: 0 0.875rem;
+    height: 3.75rem;
+    padding: 0 0.5rem;
+  }
+
+  // Élément actif : fond en pilule au lieu du simple point (plus moderne)
+  .bottom-nav__item {
+    border-radius: 999px;
+    padding: 0.375rem 0.25rem;
+  }
+
+  .bottom-nav__item--active {
+    background: rgba(26, 92, 53, 0.10);
+
+    .bottom-nav__icon::after {
+      display: none;
+    }
   }
 }

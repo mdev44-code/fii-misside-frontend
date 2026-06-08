@@ -24,6 +24,7 @@ const VARIANT_MAP: Record<string, string> = {
   in_progress: 'info',
   draft:       'neutral',
   completed:   'success',
+  abandoned:   'warning',
   cancelled:   'error',
 };
 
@@ -42,6 +43,7 @@ const LABEL_MAP: Record<string, string> = {
   in_progress: 'En cours',
   draft:       'Brouillon',
   completed:   'Terminé',
+  abandoned:   'Abandonné',
   cancelled:   'Annulé',
 };
 

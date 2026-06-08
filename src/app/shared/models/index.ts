@@ -2,12 +2,12 @@
 
 export type Role = 'admin' | 'treasurer' | 'manager' | 'member';
 export type MemberStatus = 'pending' | 'active' | 'inactive' | 'suspended';
-export type ProjectStatus = 'draft' | 'in_progress' | 'completed' | 'cancelled';
+export type ProjectStatus = 'draft' | 'in_progress' | 'completed' | 'suspended' | 'abandoned' | 'cancelled';
 export type TransactionType = 'deposit' | 'expense' | 'adjustment';
 export type TransactionStatus = 'confirmed' | 'pending_approval' | 'rejected';
 export type ContributionStatus = 'pending' | 'declared' | 'confirmed' | 'late';
 export type ContributionMode = 'free' | 'fixed';
-export type NotificationChannel = 'sms' | 'in_app';
+export type NotificationChannel = 'in_app';
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 // ─── API WRAPPER ──────────────────────────────────────────────────────────────
@@ -206,14 +206,23 @@ export interface DeclareContributionRequest {
 }
 
 // ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
+export interface BroadcastNotification {
+  id: string;
+  type: string;
+  content: string;
+  triggered_by: string | null;
+  is_read: boolean;
+  read_at: string | null;
+  created_at: string;
+}
 
 export interface AppNotification {
   id: string;
-  member_id: string;
-  channel: NotificationChannel;
   type: string;
   content: string;
+  triggered_by: string | null;
   is_read: boolean;
+  read_at: string | null;
   created_at: string;
 }
 

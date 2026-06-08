@@ -7,8 +7,18 @@ import {FcfaPipe} from "../../../shared/pipes/fcfa.pipe";
 import {ApiService} from "../../../core/services/api.service";
 import {ToastService} from "../../../core/services/toast.service";
 import {AuthService} from "../../../core/auth/auth.service";
-import {Project} from "../../../shared/models";
+import {Project, ProjectStatus} from "../../../shared/models";
 import {catchError, of} from "rxjs";
+
+// ── Transitions de statut autorisées (miroir du backend) ──────
+const STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
+  draft:       ['in_progress', 'cancelled'],
+  in_progress: ['completed', 'suspended', 'abandoned'],
+  suspended:   ['in_progress', 'abandoned'],
+  completed:   [],
+  abandoned:   [],
+  cancelled:   [],
+};
 
 @Component({
   selector: 'app-project-detail',
@@ -36,17 +46,23 @@ export class ProjectDetailComponent implements OnInit {
     return Math.min(100, Math.round((p.budget_spent / p.budget_allocated) * 100));
   });
 
-  // Statuts disponibles depuis le statut actuel
-  availableStatuses = computed((): { value: string; label: string; disabled: boolean }[] => {
+  // Statuts réellement atteignables depuis le statut actuel (transitions backend)
+  availableStatuses = computed((): { value: ProjectStatus; label: string; disabled: boolean }[] => {
     const p = this.project();
     if (!p) return [];
-    const allStatuses = [
-      { value: 'draft',       label: 'Brouillon',  disabled: p.status === 'draft' },
-      { value: 'in_progress', label: 'En cours',   disabled: p.status === 'in_progress' || (!p.budget_allocated && p.status === 'draft') },
-      { value: 'completed',   label: 'Terminé',    disabled: p.status === 'completed' },
-      { value: 'cancelled',   label: 'Annulé',     disabled: p.status === 'cancelled' },
-    ];
-    return allStatuses.filter(s => s.value !== p.status);
+    const targets = STATUS_TRANSITIONS[p.status] ?? [];
+    return targets.map(value => ({
+      value,
+      label: this.statusLabel(value),
+      // Démarrer un projet (passage "En cours") exige un budget défini
+      disabled: value === 'in_progress' && !p.budget_allocated,
+    }));
+  });
+
+  // Statut final : aucune transition possible
+  isFinalStatus = computed(() => {
+    const p = this.project();
+    return !!p && (STATUS_TRANSITIONS[p.status] ?? []).length === 0;
   });
 
   ngOnInit() {
@@ -98,8 +114,8 @@ export class ProjectDetailComponent implements OnInit {
 
   statusLabel(status: string): string {
     const map: Record<string, string> = {
-      draft: 'Brouillon', in_progress: 'En cours',
-      completed: 'Terminé', cancelled: 'Annulé',
+      draft: 'Brouillon', in_progress: 'En cours', completed: 'Terminé',
+      suspended: 'Suspendu', abandoned: 'Abandonné', cancelled: 'Annulé',
     };
     return map[status] ?? status;
   }

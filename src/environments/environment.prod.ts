@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.fii-misside.com/api/v1',
-  appName: 'Association Village',
+  apiUrl: 'https://fii-misside-backend-production.up.railway.app/api/v1',
+  appName: 'Fii-Misside',
   appVersion: '1.0.0',
 };

@@ -5,7 +5,7 @@ $cream:  rgb(245,240,232); $ink: #0d1a10; $dim: #6b7d6f;
 $border: rgba(35,112,68,0.13); $red: #dc2626; $mx: clamp(1rem,4vw,3.5rem);
 
 :host { display: block; background: $cream; min-height: 100dvh; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-.page { padding: calc(3.5rem + 1rem) $mx 5rem; max-width: 760px; }
+.page { padding: calc(3.5rem + 1rem) $mx 5rem; max-width: 760px; margin-inline: auto; }
 
 .back-btn {
   display: inline-flex; align-items: center; gap: 0.375rem;
@@ -104,4 +104,16 @@ $border: rgba(35,112,68,0.13); $red: #dc2626; $mx: clamp(1rem,4vw,3.5rem);
   background: linear-gradient(90deg, rgba(35,112,68,0.06) 25%, rgba(35,112,68,0.13) 50%, rgba(35,112,68,0.06) 75%);
   background-size: 500px 100%; animation: shimmer 1.4s infinite linear;
   &--form { height: 380px; }
+}
+
+// ── Responsive ───────────────────────────────────────────────
+@media (max-width: 580px) {
+  .form-card { padding: 1.125rem; gap: 1rem; }
+  .form-title { font-size: 1.3125rem; }
+}
+
+@media (max-width: 420px) {
+  // Boutons empilés et pleine largeur : le submit reste prioritaire en haut
+  .form-actions { flex-direction: column-reverse; gap: 0.625rem; }
+  .btn-cancel, .btn-submit { width: 100%; flex: 1 1 auto; }
 }
