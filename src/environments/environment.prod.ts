@@ -4,3 +4,4 @@ export const environment = {
   appName: 'Fii Misside',
   appVersion: '1.0.0',
 };
+console.log('PROD ENV LOADED');
