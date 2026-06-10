@@ -22,6 +22,12 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Dépense (retrait)
     </button>
+    @if (!balanceInitialized()) {
+      <button class="tab" [class.tab--active]="activeTab() === 'initialize'" (click)="switchTab('initialize')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Initialiser la caisse
+      </button>
+    }
   </div>
 
   <!-- ── FORMULAIRE DÉPÔT ──────────────────────────────────── -->
@@ -243,6 +249,54 @@
           @else {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             Enregistrer la dépense
+          }
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- ── FORMULAIRE INITIALISATION ────────────────────────── -->
+  @if (activeTab() === 'initialize') {
+    <div class="form-card">
+      <div class="form-card__header">
+        <div class="form-card__icon form-card__icon--green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div>
+          <p class="form-card__title">Initialiser la caisse</p>
+          <p class="form-card__sub">Définir le solde de départ de l'association</p>
+        </div>
+      </div>
+
+      <form [formGroup]="initForm" (ngSubmit)="submitInit()" novalidate class="form">
+        <div class="field-group" [class.field-group--error]="isInitInvalid('initial_balance')">
+          <label class="field-label">Solde initial (FCFA) <span class="req">*</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
+            <input class="field-input" type="number" formControlName="initial_balance" placeholder="0" min="0" />
+          </div>
+          @if (isInitInvalid('initial_balance')) {
+            <span class="field-error">Solde requis (≥ 0)</span>
+          }
+        </div>
+
+        <div class="warning-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Cette opération initialise le solde de départ de la caisse. Elle peut être refaite pour corriger le solde si nécessaire.
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert-error">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-submit btn-submit--green" [disabled]="loading()">
+          @if (loading()) { <span class="spinner"></span> Initialisation… }
+          @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Initialiser la caisse
           }
         </button>
       </form>

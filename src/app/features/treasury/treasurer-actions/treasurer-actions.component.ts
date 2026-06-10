@@ -10,7 +10,7 @@ import {ToastService} from "../../../core/services/toast.service";
 import {Member, Project} from "../../../shared/models";
 import {catchError, of} from "rxjs";
 
-type ActionTab = 'deposit' | 'expense';
+type ActionTab = 'deposit' | 'expense' | 'initialize';
 
 @Component({
   selector: 'app-treasurer-actions',
@@ -26,11 +26,12 @@ export class TreasurerActionsComponent implements OnInit {
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
 
-  activeTab    = signal<ActionTab>('deposit');
-  loading      = signal(false);
-  errorMessage = signal('');
-  members      = signal<Member[]>([]);
-  projects     = signal<Project[]>([]);
+  activeTab       = signal<ActionTab>('deposit');
+  loading         = signal(false);
+  errorMessage    = signal('');
+  members         = signal<Member[]>([]);
+  projects        = signal<Project[]>([]);
+  balanceInitialized = signal(false);
 
   // ── État des dropdowns custom ────────────────────────────────
   openDropdown = signal<string | null>(null);
@@ -55,6 +56,10 @@ export class TreasurerActionsComponent implements OnInit {
     project_id:  [''],
   });
 
+  initForm = this.fb.nonNullable.group({
+    initial_balance: [null as number | null, [Validators.required, Validators.min(0)]],
+  });
+
   months = [
     { value: 1, label: 'Janvier' }, { value: 2, label: 'Février' },
     { value: 3, label: 'Mars' },    { value: 4, label: 'Avril' },
@@ -76,7 +81,20 @@ export class TreasurerActionsComponent implements OnInit {
 
   ngOnInit() {
     const action = this.route.snapshot.queryParamMap.get('action');
-    if (action === 'expense') this.activeTab.set('expense');
+
+    // Vérifie si la caisse est initialisée
+    this.api.get<any>('/treasury/balance')
+      .pipe(catchError(() => of(null)))
+      .subscribe(balance => {
+        const initialized = !!balance?.initialized_by_name;
+        this.balanceInitialized.set(initialized);
+
+        if (action === 'initialize' && !initialized) {
+          this.activeTab.set('initialize');
+        } else if (action === 'expense') {
+          this.activeTab.set('expense');
+        }
+      });
 
     this.api.get<Member[]>('/members')
       .pipe(catchError(() => of([] as Member[])))
@@ -133,6 +151,11 @@ export class TreasurerActionsComponent implements OnInit {
     return !!(ctrl?.invalid && ctrl?.touched);
   }
 
+  isInitInvalid(field: string): boolean {
+    const ctrl = this.initForm.get(field);
+    return !!(ctrl?.invalid && ctrl?.touched);
+  }
+
   submitDeposit() {
     if (this.depositForm.invalid) { this.depositForm.markAllAsTouched(); return; }
     this.loading.set(true);
@@ -165,6 +188,25 @@ export class TreasurerActionsComponent implements OnInit {
     this.api.post('/treasury/expense', body).subscribe({
       next: () => {
         this.toast.success('Dépense enregistrée avec succès !');
+        this.loading.set(false);
+        this.router.navigate(['/treasury']);
+      },
+      error: (err) => {
+        this.errorMessage.set(err?.error?.message ?? 'Une erreur est survenue.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  submitInit() {
+    if (this.initForm.invalid) { this.initForm.markAllAsTouched(); return; }
+    this.loading.set(true);
+    this.errorMessage.set('');
+    const { initial_balance } = this.initForm.getRawValue();
+
+    this.api.post('/treasury/initialize', { initial_balance }).subscribe({
+      next: () => {
+        this.toast.success('Caisse initialisée avec succès !');
         this.loading.set(false);
         this.router.navigate(['/treasury']);
       },

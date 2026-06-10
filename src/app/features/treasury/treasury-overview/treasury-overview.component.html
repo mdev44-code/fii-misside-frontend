@@ -25,6 +25,14 @@
         </a>
       </div>
     }
+
+    @if (auth.isTreasurer() && !balance()?.initialized_by_name) {
+      <div class="header-actions">
+        <a routerLink="/treasury/actions" [queryParams]="{action: 'initialize'}" class="action-btn action-btn--green">
+          Initialiser la caisse
+        </a>
+      </div>
+    }
   </div>
 
   <!-- ── Solde principal ───────────────────────────────────── -->
