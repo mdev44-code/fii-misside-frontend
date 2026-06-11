@@ -7,45 +7,42 @@
     Trésorerie
   </a>
 
-  <div class="page-header">
-    <h1 class="page-title">Enregistrer une opération</h1>
-    <p class="page-sub">Réservé au comptable et à l'administrateur</p>
-  </div>
-
-  <!-- Onglets -->
-  <div class="tabs">
-    <button class="tab" [class.tab--active]="activeTab() === 'deposit'" (click)="switchTab('deposit')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Cotisation (dépôt)
+  <!-- Navigation actions -->
+  <div class="action-nav">
+    <button class="action-nav__btn" [class.action-nav__btn--active]="activeTab() === 'deposit'" (click)="switchTab('deposit')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Cotisation
     </button>
-    <button class="tab" [class.tab--active]="activeTab() === 'expense'" (click)="switchTab('expense')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Dépense (retrait)
+    <button class="action-nav__btn" [class.action-nav__btn--active]="activeTab() === 'expense'" (click)="switchTab('expense')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Dépense
     </button>
     @if (!balanceInitialized()) {
-      <button class="tab" [class.tab--active]="activeTab() === 'initialize'" (click)="switchTab('initialize')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        Initialiser la caisse
+      <button class="action-nav__btn" [class.action-nav__btn--active]="activeTab() === 'initialize'" (click)="switchTab('initialize')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Initialiser
       </button>
+    }
+  </div>
+
+  <div class="page-header">
+    @if (activeTab() === 'deposit') {
+      <h1 class="page-title">Enregistrer une cotisation</h1>
+      <p class="page-sub">Confirmer le paiement Wave d'un membre</p>
+    } @else if (activeTab() === 'expense') {
+      <h1 class="page-title">Enregistrer une dépense</h1>
+      <p class="page-sub">Après retrait Wave effectué</p>
+    } @else {
+      <h1 class="page-title">Initialiser la caisse</h1>
+      <p class="page-sub">Définir le solde de départ de l'association</p>
     }
   </div>
 
   <!-- ── FORMULAIRE DÉPÔT ──────────────────────────────────── -->
   @if (activeTab() === 'deposit') {
     <div class="form-card">
-      <div class="form-card__header">
-        <div class="form-card__icon form-card__icon--green">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </div>
-        <div>
-          <p class="form-card__title">Enregistrer une cotisation</p>
-          <p class="form-card__sub">Confirmer le paiement Wave d'un membre</p>
-        </div>
-      </div>
-
       <form [formGroup]="depositForm" (ngSubmit)="submitDeposit()" novalidate class="form">
 
-        <!-- Membre — dropdown custom -->
         <div class="field-group" [class.field-group--error]="isDepositInvalid('member_id')">
           <label class="field-label">Membre <span class="req">*</span></label>
           <div class="custom-select" [class.custom-select--open]="openDropdown() === 'member'" (click)="toggleDropdown('member', $event)">
@@ -76,19 +73,16 @@
           @if (isDepositInvalid('member_id')) { <span class="field-error">Veuillez sélectionner un membre</span> }
         </div>
 
-        <!-- Montant + Mois + Année -->
         <div class="row-3">
-
           <div class="field-group" [class.field-group--error]="isDepositInvalid('amount')">
-            <label class="field-label">Montant (FCFA) <span class="req">*</span></label>
+            <label class="field-label">Montant <span class="req">*</span></label>
             <div class="field-wrap">
-              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
-              <input class="field-input" type="number" formControlName="amount" placeholder="5000" min="1" />
+              <span class="field-currency">XOF</span>
+              <input class="field-input field-input--currency" type="number" formControlName="amount" placeholder="5 000" min="1" />
             </div>
             @if (isDepositInvalid('amount')) { <span class="field-error">Montant requis (> 0)</span> }
           </div>
 
-          <!-- Mois dropdown custom -->
           <div class="field-group">
             <label class="field-label">Mois <span class="req">*</span></label>
             <div class="custom-select" [class.custom-select--open]="openDropdown() === 'month'" (click)="toggleDropdown('month', $event)">
@@ -111,7 +105,6 @@
             </div>
           </div>
 
-          <!-- Année dropdown custom -->
           <div class="field-group">
             <label class="field-label">Année <span class="req">*</span></label>
             <div class="custom-select" [class.custom-select--open]="openDropdown() === 'year'" (click)="toggleDropdown('year', $event)">
@@ -135,7 +128,6 @@
           </div>
         </div>
 
-        <!-- Note optionnelle -->
         <div class="field-group">
           <label class="field-label">Note <span class="opt">optionnel</span></label>
           <div class="field-wrap">
@@ -165,29 +157,17 @@
   <!-- ── FORMULAIRE DÉPENSE ────────────────────────────────── -->
   @if (activeTab() === 'expense') {
     <div class="form-card">
-      <div class="form-card__header">
-        <div class="form-card__icon form-card__icon--red">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </div>
-        <div>
-          <p class="form-card__title">Enregistrer une dépense</p>
-          <p class="form-card__sub">Après retrait Wave effectué</p>
-        </div>
-      </div>
-
       <form [formGroup]="expenseForm" (ngSubmit)="submitExpense()" novalidate class="form">
 
-        <!-- Montant -->
         <div class="field-group" [class.field-group--error]="isExpenseInvalid('amount')">
-          <label class="field-label">Montant (FCFA) <span class="req">*</span></label>
+          <label class="field-label">Montant <span class="req">*</span></label>
           <div class="field-wrap">
-            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
-            <input class="field-input" type="number" formControlName="amount" placeholder="50000" min="1" />
+            <span class="field-currency">XOF</span>
+            <input class="field-input field-input--currency" type="number" formControlName="amount" placeholder="50 000" min="1" />
           </div>
           @if (isExpenseInvalid('amount')) { <span class="field-error">Montant requis (> 0)</span> }
         </div>
 
-        <!-- Description -->
         <div class="field-group" [class.field-group--error]="isExpenseInvalid('description')">
           <label class="field-label">Description <span class="req">*</span></label>
           <div class="field-wrap">
@@ -197,7 +177,6 @@
           @if (isExpenseInvalid('description')) { <span class="field-error">Description requise (min 5 caractères)</span> }
         </div>
 
-        <!-- Projet lié — dropdown custom -->
         <div class="field-group">
           <label class="field-label">Projet lié <span class="opt">optionnel</span></label>
           <div class="custom-select" [class.custom-select--open]="openDropdown() === 'project'" (click)="toggleDropdown('project', $event)">
@@ -258,22 +237,13 @@
   <!-- ── FORMULAIRE INITIALISATION ────────────────────────── -->
   @if (activeTab() === 'initialize') {
     <div class="form-card">
-      <div class="form-card__header">
-        <div class="form-card__icon form-card__icon--green">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        </div>
-        <div>
-          <p class="form-card__title">Initialiser la caisse</p>
-          <p class="form-card__sub">Définir le solde de départ de l'association</p>
-        </div>
-      </div>
-
       <form [formGroup]="initForm" (ngSubmit)="submitInit()" novalidate class="form">
+
         <div class="field-group" [class.field-group--error]="isInitInvalid('initial_balance')">
-          <label class="field-label">Solde initial (FCFA) <span class="req">*</span></label>
+          <label class="field-label">Solde initial <span class="req">*</span></label>
           <div class="field-wrap">
-            <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2M12 16v2M8.5 9a3.5 3.5 0 0 1 7 0c0 2-3.5 3-3.5 5M8.5 15h7"/></svg>
-            <input class="field-input" type="number" formControlName="initial_balance" placeholder="0" min="0" />
+            <span class="field-currency">XOF</span>
+            <input class="field-input field-input--currency" type="number" formControlName="initial_balance" placeholder="0" min="0" />
           </div>
           @if (isInitInvalid('initial_balance')) {
             <span class="field-error">Solde requis (≥ 0)</span>

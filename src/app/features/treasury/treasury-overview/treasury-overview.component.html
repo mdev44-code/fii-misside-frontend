@@ -8,9 +8,16 @@
       <h1 class="page-title">Trésorerie</h1>
       <p class="page-sub">Caisse de l'association</p>
     </div>
-    <!-- Actions comptable / admin -->
     @if (auth.isTreasurer()) {
       <div class="header-actions">
+        @if (!balance()?.initialized_by_name) {
+          <a routerLink="/treasury/actions" [queryParams]="{action: 'initialize'}" class="action-btn action-btn--init">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Initialiser la caisse
+          </a>
+        }
         <a routerLink="/treasury/actions" [queryParams]="{action: 'deposit'}" class="action-btn action-btn--green">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -22,14 +29,6 @@
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
           Dépense
-        </a>
-      </div>
-    }
-
-    @if (auth.isTreasurer() && !balance()?.initialized_by_name) {
-      <div class="header-actions">
-        <a routerLink="/treasury/actions" [queryParams]="{action: 'initialize'}" class="action-btn action-btn--green">
-          Initialiser la caisse
         </a>
       </div>
     }
@@ -97,14 +96,12 @@
       }
     </div>
 
-    <!-- Filtres -->
     <div class="filters">
       <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'all'"     (click)="setFilter('all')">Tout</button>
       <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'deposit'" (click)="setFilter('deposit')">Cotisations</button>
       <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'expense'" (click)="setFilter('expense')">Dépenses</button>
     </div>
 
-    <!-- Liste transactions -->
     @if (loadingTx()) {
       @for (i of [1,2,3,4,5]; track i) {
         <div class="skel skel--tx"></div>
@@ -120,7 +117,6 @@
       <div class="tx-list">
         @for (tx of transactions(); track tx.id) {
           <div class="tx-row">
-            <!-- Icône type -->
             <div class="tx-row__icon" [attr.data-type]="tx.type">
               @if (tx.type === 'deposit') {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -136,8 +132,6 @@
                 </svg>
               }
             </div>
-
-            <!-- Infos -->
             <div class="tx-row__info">
               <p class="tx-row__label">
                 @if (tx.member_name) {
@@ -158,8 +152,6 @@
                 <span class="tx-row__project">{{ tx.project_title }}</span>
               }
             </div>
-
-            <!-- Montant + solde après -->
             <div class="tx-row__amounts">
               <p class="tx-row__amount" [attr.data-type]="tx.type">
                 {{ tx.type === 'expense' ? '−' : '+' }}{{ tx.amount | fcfa }}
@@ -170,7 +162,6 @@
         }
       </div>
 
-      <!-- Pagination -->
       @if (totalPages() > 1) {
         <div class="pagination">
           <button class="page-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">

@@ -211,3 +211,8 @@ $mx:       clamp(1rem, 4vw, 3.5rem);
   &--balance { height: 110px; }
   &--tx      { height: 64px; }
 }
+
+.action-btn--init {
+  color: $green; background: $green-xl; border: 1.5px solid rgba(35,112,68,0.25);
+  &:hover { background: rgba(35,112,68,0.18); }
+}

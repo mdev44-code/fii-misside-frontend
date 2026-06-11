@@ -204,7 +204,7 @@ export class TreasurerActionsComponent implements OnInit {
     this.errorMessage.set('');
     const { initial_balance } = this.initForm.getRawValue();
 
-    this.api.post('/treasury/initialize', { initial_balance }).subscribe({
+    this.api.post('/treasury/init', { initial_balance }).subscribe({
       next: () => {
         this.toast.success('Caisse initialisée avec succès !');
         this.loading.set(false);
