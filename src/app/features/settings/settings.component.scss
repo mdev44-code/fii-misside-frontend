@@ -1,0 +1,381 @@
+// ── Variables (identiques aux autres pages) ───────────────────────────────
+$green:       rgb(35, 112, 68);
+$green-light: rgba(35, 112, 68, 0.08);
+$cream:       rgb(245, 240, 232);
+$ink:         #0d1a10;
+$dim:         #6b7d6f;
+$border:      rgba(35, 112, 68, 0.13);
+$red:         #c62828;
+
+// ── Page ─────────────────────────────────────────────────────────────────
+// padding-top 3.5rem = hauteur exacte de la navbar fixe (voir navbar.component.scss)
+.settings-page {
+  min-height: 100dvh;
+  background: $cream;
+  padding-top: 3.5rem;
+  padding-bottom: 90px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  &__inner {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 28px 16px 32px;
+  }
+}
+
+// ── Header de page ────────────────────────────────────────────────────────
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  &__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: $green;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $ink;
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+
+  &__sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.8125rem;
+    color: $dim;
+    margin: 0;
+  }
+}
+
+// ── Skeleton ────────────────────────────────────────────────────────────────
+
+.settings-skeleton {
+  &__card {
+    background: white;
+    border: 1px solid $border;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__line {
+    height: 14px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e8e8e4 25%, #f0f0ec 50%, #e8e8e4 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+
+    &--title { height: 20px; width: 55%; }
+    &--short { width: 40%; }
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────
+.settings-card {
+  background: white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+
+  &__head {
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid $border;
+  }
+
+  &__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 4px;
+    color: $green;
+  }
+
+  &__title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $ink;
+    margin: 0;
+  }
+
+  &__desc {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.8rem;
+    color: $dim;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__body {
+    padding: 18px;
+  }
+
+  &__meta {
+    padding: 10px 18px;
+    border-top: 1px solid $border;
+    background: rgba($green-light, 0.5);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.75rem;
+    color: $dim;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+
+    strong { color: $ink; font-weight: 600; }
+    svg { flex-shrink: 0; opacity: 0.7; }
+  }
+}
+
+// ── Mode options ────────────────────────────────────────────────────────────
+.mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 14px;
+  border: 1.5px solid $border;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: transparent;
+
+  &--active {
+    border-color: $green;
+    background: $green-light;
+  }
+
+  &:hover:not(&--active) {
+    border-color: rgba(35, 112, 68, 0.3);
+    background: rgba(35, 112, 68, 0.04);
+  }
+
+  &__radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  &__check {
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 1.5px solid $border;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    transition: background 0.15s, border-color 0.15s;
+
+    .mode-option--active & {
+      background: $green;
+      border-color: $green;
+    }
+  }
+
+  &__name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  &__detail {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.7875rem;
+    color: $dim;
+    margin: 0;
+    line-height: 1.5;
+    padding-left: 27px; // aligne sous le nom
+  }
+}
+
+// ── Champ montant ────────────────────────────────────────────────────────────
+.amount-field {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed $border;
+
+  &__label {
+    display: block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: $ink;
+    margin-bottom: 7px;
+  }
+
+  &__input-wrap {
+    display: flex;
+    align-items: stretch;
+    border: 1.5px solid $border;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    transition: border-color 0.15s;
+
+    &:focus-within {
+      border-color: $green;
+    }
+  }
+
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9375rem;
+    color: $ink;
+    background: transparent;
+    min-width: 0;
+
+    &::placeholder { color: rgba(107, 125, 111, 0.55); }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      opacity: 0.4;
+    }
+  }
+
+  &__suffix {
+    display: flex;
+    align-items: center;
+    padding: 10px 13px;
+    background: $green-light;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $green;
+    border-left: 1px solid $border;
+    white-space: nowrap;
+  }
+
+  &__error {
+    margin: 5px 0 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.75rem;
+    color: $red;
+  }
+}
+
+// ── Barre d'actions ───────────────────────────────────────────────────────────
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  justify-content: flex-end;
+
+  button {
+    border: none;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 10px 18px;
+    transition: opacity 0.15s, background 0.15s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__cancel {
+    background: transparent;
+    color: $dim;
+    border: 1.5px solid $border !important;
+
+    &:hover:not(:disabled) {
+      background: $green-light;
+      color: $ink;
+    }
+  }
+
+  &__save {
+    background: $green;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    &:hover:not(:disabled) {
+      background: rgb(28, 90, 55);
+    }
+  }
+
+  &__spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(white, 0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .settings-page__inner {
+    padding: 20px 12px 28px;
+  }
+
+  .settings-header {
+    margin-bottom: 20px;
+    &__title { font-size: 1.125rem; }
+  }
+
+  .settings-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

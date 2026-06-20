@@ -105,6 +105,13 @@ export const routes: Routes = [
         path: 'profile',
         loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
       },
+
+      {
+        path: 'settings',
+        canActivate: [roleGuard(['admin', 'treasurer'])],
+        loadComponent: () =>
+          import('./features/settings/settings.component').then(m => m.SettingsComponent),
+      },
     ],
   },
 

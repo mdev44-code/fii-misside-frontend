@@ -1,0 +1,190 @@
+<app-navbar />
+
+<main class="settings-page">
+  <div class="settings-page__inner">
+
+    <!-- ── En-tête ───────────────────────────────────────────── -->
+    <header class="settings-header">
+      <div class="settings-header__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06
+                   a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09
+                   A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83
+                   l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09
+                   A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83
+                   l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09
+                   a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83
+                   l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09
+                   a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="settings-header__title">Paramètres</h1>
+        <p class="settings-header__sub">Configuration de l'association</p>
+      </div>
+    </header>
+
+    <!-- ── Chargement ─────────────────────────────────────────── -->
+    @if (loading()) {
+      <div class="settings-skeleton">
+        <div class="settings-skeleton__card">
+          <div class="settings-skeleton__line settings-skeleton__line--title"></div>
+          <div class="settings-skeleton__line"></div>
+          <div class="settings-skeleton__line settings-skeleton__line--short"></div>
+        </div>
+      </div>
+    }
+
+    @if (!loading()) {
+      <!-- ── Section cotisations ──────────────────────────────── -->
+      <section class="settings-card">
+        <div class="settings-card__head">
+          <div class="settings-card__title-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="6"/>
+              <path d="M18.09 10.37A6 6 0 1 1 10.34 18"/>
+              <path d="M7 6h1v4"/>
+              <path d="M16.71 13.88l.7.71-2.82 2.82"/>
+            </svg>
+            <h2 class="settings-card__title">Mode de cotisation</h2>
+          </div>
+          <p class="settings-card__desc">
+            Définit comment les cotisations mensuelles des membres sont calculées.
+          </p>
+        </div>
+
+        <div class="settings-card__body">
+          <!-- Choix du mode -->
+          <div class="mode-options">
+
+            <label class="mode-option" [class.mode-option--active]="mode() === 'free'">
+              <input
+                type="radio"
+                name="contribution_mode"
+                value="free"
+                [checked]="mode() === 'free'"
+                (change)="onModeChange('free')"
+                class="mode-option__radio"
+              />
+              <div class="mode-option__content">
+                <div class="mode-option__header">
+                  <span class="mode-option__check">
+                    @if (mode() === 'free') {
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    }
+                  </span>
+                  <strong class="mode-option__name">Cotisation libre</strong>
+                </div>
+                <p class="mode-option__detail">
+                  Chaque membre décide du montant qu'il verse. Le comptable saisit le montant réel.
+                </p>
+              </div>
+            </label>
+
+            <label class="mode-option" [class.mode-option--active]="mode() === 'fixed'">
+              <input
+                type="radio"
+                name="contribution_mode"
+                value="fixed"
+                [checked]="mode() === 'fixed'"
+                (change)="onModeChange('fixed')"
+                class="mode-option__radio"
+              />
+              <div class="mode-option__content">
+                <div class="mode-option__header">
+                  <span class="mode-option__check">
+                    @if (mode() === 'fixed') {
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    }
+                  </span>
+                  <strong class="mode-option__name">Cotisation fixe</strong>
+                </div>
+                <p class="mode-option__detail">
+                  Un montant identique est attendu de chaque membre chaque mois.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Montant fixe (visible seulement si mode fixe) -->
+          @if (mode() === 'fixed') {
+            <div class="amount-field">
+              <label class="amount-field__label" for="fixed_amount">
+                Montant mensuel par membre
+              </label>
+              <div class="amount-field__input-wrap">
+                <input
+                  id="fixed_amount"
+                  type="number"
+                  class="amount-field__input"
+                  [class.amount-field__input--error]="mode() === 'fixed' && (fixedAmount() === null || fixedAmount()! <= 0)"
+                  [value]="fixedAmount() ?? ''"
+                  (input)="onAmountInput($event)"
+                  min="1"
+                  step="500"
+                  placeholder="ex: 5000"
+                />
+                <span class="amount-field__suffix">FCFA</span>
+              </div>
+              @if (mode() === 'fixed' && (fixedAmount() === null || fixedAmount()! <= 0)) {
+                <p class="amount-field__error">Le montant doit être supérieur à 0</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Dernière modification -->
+        @if (settings()?.updated_at) {
+          <div class="settings-card__meta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Modifié le {{ formatDate(settings()!.updated_at) }}
+            @if (settings()?.updated_by_name) {
+              <span>par <strong>{{ settings()!.updated_by_name }}</strong></span>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- ── Actions ───────────────────────────────────────────── -->
+      @if (isDirty) {
+        <div class="settings-actions">
+          <button
+            class="settings-actions__cancel"
+            (click)="reset()"
+            [disabled]="saving()"
+          >
+            Annuler
+          </button>
+          <button
+            class="settings-actions__save"
+            (click)="save()"
+            [disabled]="!isValid || saving()"
+          >
+            @if (saving()) {
+              <span class="settings-actions__spinner"></span>
+              Enregistrement…
+            } @else {
+              Enregistrer les modifications
+            }
+          </button>
+        </div>
+      }
+    }
+
+  </div>
+</main>
+
+<app-bottom-nav />
