@@ -535,3 +535,13 @@ $error-bg:  #FEF2F2;
   transition: color 0.15s;
   &:hover { color: $green-400; text-decoration: underline; }
 }
+.forgot-link {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  color: rgb(35, 112, 68);
+  text-decoration: none;
+  margin-top: 5px;
+
+  &:hover { text-decoration: underline; }
+}

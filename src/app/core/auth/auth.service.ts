@@ -126,6 +126,26 @@ export class AuthService {
     );
   }
 
+  // ── MOT DE PASSE OUBLIÉ ───────────────────────────────────────────────────
+
+  forgotPassword(email: string): Observable<void> {
+    return this.http
+      .post<ApiResponse<void>>(`${this.base}/forgot-password`, { email })
+      .pipe(map(r => r.data));
+  }
+
+  verifyResetCode(email: string, code: string): Observable<{ reset_token: string }> {
+    return this.http
+      .post<ApiResponse<{ reset_token: string }>>(`${this.base}/verify-reset-code`, { email, code })
+      .pipe(map(r => r.data));
+  }
+
+  resetPassword(reset_token: string, new_password: string, confirm_password: string): Observable<void> {
+    return this.http
+      .post<ApiResponse<void>>(`${this.base}/reset-password`, { reset_token, new_password, confirm_password })
+      .pipe(map(r => r.data));
+  }
+
   // ── HELPERS ───────────────────────────────────────────────────────────────
 
   hasRole(...roles: string[]): boolean {

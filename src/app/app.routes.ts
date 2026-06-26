@@ -14,6 +14,13 @@ export const routes: Routes = [
     canActivate: [publicGuard],
     loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent),
   },
+  {
+    path: 'forgot-password',
+    canActivate: [publicGuard],
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component')
+        .then(m => m.ForgotPasswordComponent),
+  },
 
   // ── App (protected) ───────────────────────────────────────────────────────
   {

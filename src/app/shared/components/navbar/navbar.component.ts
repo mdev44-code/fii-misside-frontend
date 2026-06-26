@@ -35,9 +35,14 @@ export class NavbarComponent implements OnInit {
   showDropdown = signal(false);
 
   ngOnInit() {
-    this.loadUnreadCount();
-    // Polling léger : recharge le count toutes les 60s
-    setInterval(() => this.loadUnreadCount(), 60_000);
+    if (this.auth.isAuthenticated()) {
+      this.loadUnreadCount();
+      setInterval(() => {
+        if (this.auth.isAuthenticated()) {
+          this.loadUnreadCount();
+        }
+      }, 60_000);
+    }
   }
 
   initials(): string {
@@ -48,6 +53,7 @@ export class NavbarComponent implements OnInit {
   // ── Notifications ──────────────────────────────────────────
 
   loadUnreadCount() {
+    if (!this.auth.isAuthenticated()) return;
     this.api.get<{ unread_count: number }>('/notifications/count').subscribe({
       next: res => this.unreadCount.set(res.unread_count),
       error: () => {},
